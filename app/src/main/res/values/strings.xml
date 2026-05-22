@@ -1,0 +1,21 @@
+<resources>
+    <string name="app_name">Voca</string>
+    <string name="landing_title">Voca</string>
+    <string name="landing_subtitle">Manajemen Keuangan Pintar</string>
+    <string name="login">Login</string>
+    <string name="register">Register</string>
+    <string name="email">Email</string>
+    <string name="password">Password</string>
+    <string name="full_name">Nama Lengkap</string>
+    <string name="welcome">Halo, %1$s</string>
+    <string name="total_balance">Total Saldo</string>
+    <string name="add_transaction">Tambah Transaksi</string>
+    <string name="title">Keterangan</string>
+    <string name="amount">Jumlah</string>
+    <string name="income">Pemasukan</string>
+    <string name="expense">Pengeluaran</string>
+    <string name="save">Simpan Transaksi</string>
+    <string name="logout">Logout</string>
+    <string name="view_tips">Lihat Tips Keuangan</string>
+    <string name="tips_title">Tips Keuangan Voca</string>
+</resources>
