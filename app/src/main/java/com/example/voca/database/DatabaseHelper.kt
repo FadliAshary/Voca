@@ -34,6 +34,15 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
         private const val COLUMN_GOAL_TARGET_AMOUNT = "target_amount"
         private const val COLUMN_GOAL_CURRENT_AMOUNT = "current_amount"
         private const val COLUMN_GOAL_DEADLINE = "deadline"
+
+        // Event table (added for XAMPP integration example)
+        const val TABLE_EVENTS = "events"
+        const val COL_ID = "id"
+        const val COL_NAME = "name"
+        const val COL_DATE = "date"
+        const val COL_LOCATION = "location"
+        const val COL_PRICE = "price"
+        const val COL_REGISTERED = "is_registered"
     }
 
     override fun onCreate(db: SQLiteDatabase?) {
@@ -58,15 +67,25 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
                 "$COLUMN_GOAL_CURRENT_AMOUNT REAL," +
                 "$COLUMN_GOAL_DEADLINE TEXT)")
 
+        val createEventsTable = ("CREATE TABLE $TABLE_EVENTS (" +
+                "$COL_ID INTEGER PRIMARY KEY AUTOINCREMENT," +
+                "$COL_NAME TEXT," +
+                "$COL_DATE TEXT," +
+                "$COL_LOCATION TEXT," +
+                "$COL_PRICE INTEGER," +
+                "$COL_REGISTERED INTEGER DEFAULT 0)")
+
         db?.execSQL(createUsersTable)
         db?.execSQL(createFinanceTable)
         db?.execSQL(createGoalsTable)
+        db?.execSQL(createEventsTable)
     }
 
     override fun onUpgrade(db: SQLiteDatabase?, oldVersion: Int, newVersion: Int) {
         db?.execSQL("DROP TABLE IF EXISTS $TABLE_USERS")
         db?.execSQL("DROP TABLE IF EXISTS $TABLE_FINANCE")
         db?.execSQL("DROP TABLE IF EXISTS $TABLE_GOALS")
+        db?.execSQL("DROP TABLE IF EXISTS $TABLE_EVENTS")
         onCreate(db)
     }
 
