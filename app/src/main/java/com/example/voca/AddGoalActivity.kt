@@ -12,6 +12,7 @@ import java.util.*
 class AddGoalActivity : AppCompatActivity() {
     private lateinit var binding: ActivityAddGoalBinding
     private lateinit var db: DatabaseHelper
+    private lateinit var session: com.example.voca.utils.SessionManager
     private var calendar = Calendar.getInstance()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -20,6 +21,7 @@ class AddGoalActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         db = DatabaseHelper(this)
+        session = com.example.voca.utils.SessionManager(this)
 
         binding.toolbar.setNavigationOnClickListener { finish() }
 
@@ -45,8 +47,9 @@ class AddGoalActivity : AppCompatActivity() {
         if (name.isNotEmpty() && targetStr.isNotEmpty()) {
             val target = targetStr.toDoubleOrNull() ?: 0.0
             val initial = initialStr.toDoubleOrNull() ?: 0.0
+            val userId = session.getUserId()
             
-            val res = db.addGoal(name, target, initial, deadline)
+            val res = db.addGoal(userId, name, target, initial, deadline)
             if (res > 0) {
                 Toast.makeText(this, "Target Tabungan Berhasil Dibuat", Toast.LENGTH_SHORT).show()
                 finish()

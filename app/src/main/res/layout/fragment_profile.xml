@@ -193,13 +193,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical">
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:padding="16dp"
-                    android:text="Pengaturan Akun"
-                    android:textColor="@color/voca_dark_blue"
-                    android:textStyle="bold" />
 
                 <LinearLayout
                     android:id="@+id/btnAccountSettings"
@@ -285,6 +278,54 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="2FA, Biometrik, dan Kata Sandi"
+                            android:textColor="@color/voca_text_gray"
+                            android:textSize="10sp" />
+                    </LinearLayout>
+                    <ImageView
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:src="@drawable/ic_arrow_forward"
+                        app:tint="@color/voca_text_gray" />
+                </LinearLayout>
+
+                <View android:layout_width="match_parent" android:layout_height="1dp" android:background="#F1F5F9" />
+
+                <LinearLayout
+                    android:id="@+id/btnSetTarget"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@color/white"
+                    android:gravity="center_vertical"
+                    android:padding="16dp">
+                    <com.google.android.material.card.MaterialCardView
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
+                        app:cardBackgroundColor="#F1F5F9"
+                        app:cardCornerRadius="20dp"
+                        app:cardElevation="0dp">
+                        <ImageView
+                            android:layout_width="20dp"
+                            android:layout_height="20dp"
+                            android:layout_gravity="center"
+                            android:src="@drawable/ic_budget"
+                            app:tint="@color/voca_primary_blue" />
+                    </com.google.android.material.card.MaterialCardView>
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="12dp"
+                        android:layout_weight="1"
+                        android:orientation="vertical">
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Target Tabungan"
+                            android:textColor="@color/voca_dark_blue"
+                            android:textStyle="bold" />
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Atur persentase target menabung bulanan"
                             android:textColor="@color/voca_text_gray"
                             android:textSize="10sp" />
                     </LinearLayout>

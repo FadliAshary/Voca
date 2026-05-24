@@ -37,12 +37,16 @@ class ProfileFragment : Fragment() {
 
         updateProfileUI()
         
-        binding.tvTargetLabel.setOnClickListener {
+        binding.btnSetTarget.setOnClickListener {
             showSetTargetDialog()
         }
 
         binding.btnAccountSettings.setOnClickListener {
             startActivity(Intent(requireContext(), EditProfileActivity::class.java))
+        }
+        
+        binding.btnAiInsight.setOnClickListener {
+            startActivity(Intent(requireContext(), AiInsightsActivity::class.java))
         }
         
         binding.ivProfileLarge.setOnClickListener {
@@ -128,8 +132,9 @@ class ProfileFragment : Fragment() {
     }
 
     private fun updateStats() {
-        val allTransactions = db.getAllTransactions()
-        val goals = db.getAllGoals()
+        val userId = session.getUserId()
+        val allTransactions = db.getAllTransactions(userId)
+        val goals = db.getAllGoals(userId)
         
         val filteredTransactions = filterTransactionsByPeriod(allTransactions)
         

@@ -2,6 +2,8 @@ package com.example.voca
 
 import android.content.Intent
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -14,6 +16,7 @@ import androidx.fragment.app.Fragment
 import com.example.voca.database.DatabaseHelper
 import com.example.voca.databinding.FragmentBudgetBinding
 import com.example.voca.utils.SessionManager
+import java.text.DecimalFormat
 import java.text.NumberFormat
 import java.text.SimpleDateFormat
 import java.util.*
@@ -57,7 +60,35 @@ class BudgetFragment : Fragment() {
         val btnMonthly = view.findViewById<TextView>(R.id.tvDialogMonthly)
         
         var selectedType = session.getBudgetType()
-        etAmount.setText(session.getBudgetTarget().toLong().toString())
+        val currentTarget = session.getBudgetTarget().toLong()
+        
+        // Format nominal awal dengan titik
+        if (currentTarget > 0) {
+            etAmount.setText(DecimalFormat("#,###").format(currentTarget).replace(",", "."))
+        }
+
+        // Add TextWatcher for dot formatting
+        etAmount.addTextChangedListener(object : TextWatcher {
+            private var current = ""
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+            override fun afterTextChanged(s: Editable?) {
+                if (s.toString() != current) {
+                    etAmount.removeTextChangedListener(this)
+                    val cleanString = s.toString().replace(".", "")
+                    if (cleanString.isNotEmpty()) {
+                        val parsed = cleanString.toDouble()
+                        val formatted = DecimalFormat("#,###").format(parsed).replace(",", ".")
+                        current = formatted
+                        etAmount.setText(formatted)
+                        etAmount.setSelection(formatted.length)
+                    } else {
+                        current = ""
+                    }
+                    etAmount.addTextChangedListener(this)
+                }
+            }
+        })
 
         val updateSelection = {
             if (selectedType == "Mingguan") {
@@ -77,16 +108,23 @@ class BudgetFragment : Fragment() {
         btnWeekly.setOnClickListener { selectedType = "Mingguan"; updateSelection() }
         btnMonthly.setOnClickListener { selectedType = "Bulanan"; updateSelection() }
 
-        AlertDialog.Builder(requireContext(), R.style.CustomDialog)
+        val dialog = AlertDialog.Builder(requireContext(), R.style.CustomDialog)
             .setView(view)
-            .setPositiveButton("Simpan") { _, _ ->
-                val amount = etAmount.text.toString().toFloatOrNull() ?: 0f
-                session.setBudgetTarget(amount)
-                session.setBudgetType(selectedType)
-                updateUI()
-            }
-            .setNegativeButton("Batal", null)
-            .show()
+            .create()
+
+        view.findViewById<View>(R.id.btnDialogCancel).setOnClickListener {
+            dialog.dismiss()
+        }
+
+        view.findViewById<View>(R.id.btnDialogSave).setOnClickListener {
+            val amount = etAmount.text.toString().replace(".", "").toFloatOrNull() ?: 0f
+            session.setBudgetTarget(amount)
+            session.setBudgetType(selectedType)
+            updateUI()
+            dialog.dismiss()
+        }
+
+        dialog.show()
     }
 
     private fun getCurrencyFormatter(): NumberFormat {
@@ -100,7 +138,8 @@ class BudgetFragment : Fragment() {
     }
 
     private fun updateUI() {
-        val transactions = db.getAllTransactions()
+        val userId = session.getUserId()
+        val transactions = db.getAllTransactions(userId)
         
         val monthFormat = SimpleDateFormat("MMMM yyyy", Locale("id", "ID"))
         val now = Calendar.getInstance()
@@ -183,7 +222,8 @@ class BudgetFragment : Fragment() {
 
     private fun updateGoalsList() {
         binding.goalsContainer.removeAllViews()
-        val goals = db.getAllGoals()
+        val userId = session.getUserId()
+        val goals = db.getAllGoals(userId)
         val formatter = getCurrencyFormatter()
 
         if (goals.isEmpty()) {

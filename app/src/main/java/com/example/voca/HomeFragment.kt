@@ -43,7 +43,8 @@ class HomeFragment : Fragment() {
     }
 
     private fun updateUI() {
-        val transactions = db.getAllTransactions()
+        val userId = session.getUserId()
+        val transactions = db.getAllTransactions(userId)
         var totalIncome = 0.0
         var totalExpense = 0.0
 

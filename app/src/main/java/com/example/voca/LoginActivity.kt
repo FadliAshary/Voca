@@ -49,6 +49,12 @@ class LoginActivity : AppCompatActivity() {
                         val body = response.body()
                         if (body != null && body["success"] == true) {
                             session.setLogin(true)
+                            
+                            // Ambil ID dari server dan simpan ke session
+                            val userIdStr = body["id"]?.toString() ?: "-1"
+                            val userId = userIdStr.toDoubleOrNull()?.toInt() ?: -1
+                            session.setUserId(userId)
+
                             session.setUserName(body["name"]?.toString() ?: email)
                             session.setUserEmail(email)
                             Toast.makeText(this@LoginActivity, "Login Berhasil", Toast.LENGTH_SHORT).show()

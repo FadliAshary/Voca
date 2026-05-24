@@ -20,6 +20,7 @@ import java.util.*
 class AddTransactionActivity : AppCompatActivity() {
     private lateinit var binding: ActivityAddTransactionBinding
     private lateinit var db: DatabaseHelper
+    private lateinit var session: com.example.voca.utils.SessionManager
     private var selectedCategory = "Makanan"
     private var calendar = Calendar.getInstance()
     private var selectedAccount = "Tabungan Utama"
@@ -30,6 +31,7 @@ class AddTransactionActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         db = DatabaseHelper(this)
+        session = com.example.voca.utils.SessionManager(this)
 
         setupToolbar()
         setupCategorySelection()
@@ -137,8 +139,10 @@ class AddTransactionActivity : AppCompatActivity() {
             // Format tanggal untuk MySQL (Server YYYY-MM-DD)
             val dateServer = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(calendar.time)
             
+            val userId = session.getUserId()
+
             // 1. Simpan ke Database Lokal (Agar langsung muncul di Home)
-            db.addTransaction(title, amount, type, selectedCategory, dateLocal)
+            db.addTransaction(userId, title, amount, type, selectedCategory, dateLocal)
 
             // 2. Simpan ke Server XAMPP
             val apiService = ApiService.getInstance()

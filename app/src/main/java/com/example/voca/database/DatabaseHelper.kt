@@ -9,11 +9,11 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
 
     companion object {
         private const val DATABASE_NAME = "voca_db"
-        private const val DATABASE_VERSION = 1
+        private const val DATABASE_VERSION = 2
 
         // User table
         private const val TABLE_USERS = "users"
-        private const val COLUMN_USER_ID = "id"
+        private const val COLUMN_USER_ID_PK = "id"
         private const val COLUMN_USER_NAME = "name"
         private const val COLUMN_USER_EMAIL = "email"
         private const val COLUMN_USER_PASSWORD = "password"
@@ -21,6 +21,7 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
         // Finance table
         private const val TABLE_FINANCE = "finance"
         private const val COLUMN_FIN_ID = "id"
+        private const val COLUMN_FIN_USER_ID = "user_id"
         private const val COLUMN_FIN_TITLE = "title"
         private const val COLUMN_FIN_AMOUNT = "amount"
         private const val COLUMN_FIN_TYPE = "type" // "income" or "expense"
@@ -30,6 +31,7 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
         // Savings Goals table
         private const val TABLE_GOALS = "savings_goals"
         private const val COLUMN_GOAL_ID = "id"
+        private const val COLUMN_GOAL_USER_ID = "user_id"
         private const val COLUMN_GOAL_NAME = "name"
         private const val COLUMN_GOAL_TARGET_AMOUNT = "target_amount"
         private const val COLUMN_GOAL_CURRENT_AMOUNT = "current_amount"
@@ -47,13 +49,14 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
 
     override fun onCreate(db: SQLiteDatabase?) {
         val createUsersTable = ("CREATE TABLE $TABLE_USERS (" +
-                "$COLUMN_USER_ID INTEGER PRIMARY KEY AUTOINCREMENT," +
+                "$COLUMN_USER_ID_PK INTEGER PRIMARY KEY AUTOINCREMENT," +
                 "$COLUMN_USER_NAME TEXT," +
                 "$COLUMN_USER_EMAIL TEXT UNIQUE," +
                 "$COLUMN_USER_PASSWORD TEXT)")
         
         val createFinanceTable = ("CREATE TABLE $TABLE_FINANCE (" +
                 "$COLUMN_FIN_ID INTEGER PRIMARY KEY AUTOINCREMENT," +
+                "$COLUMN_FIN_USER_ID INTEGER," +
                 "$COLUMN_FIN_TITLE TEXT," +
                 "$COLUMN_FIN_AMOUNT REAL," +
                 "$COLUMN_FIN_TYPE TEXT," +
@@ -62,6 +65,7 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
 
         val createGoalsTable = ("CREATE TABLE $TABLE_GOALS (" +
                 "$COLUMN_GOAL_ID INTEGER PRIMARY KEY AUTOINCREMENT," +
+                "$COLUMN_GOAL_USER_ID INTEGER," +
                 "$COLUMN_GOAL_NAME TEXT," +
                 "$COLUMN_GOAL_TARGET_AMOUNT REAL," +
                 "$COLUMN_GOAL_CURRENT_AMOUNT REAL," +
@@ -108,9 +112,10 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
     }
 
     // Finance operations
-    fun addTransaction(title: String, amount: Double, type: String, category: String, date: String): Long {
+    fun addTransaction(userId: Int, title: String, amount: Double, type: String, category: String, date: String): Long {
         val db = this.writableDatabase
         val values = ContentValues()
+        values.put(COLUMN_FIN_USER_ID, userId)
         values.put(COLUMN_FIN_TITLE, title)
         values.put(COLUMN_FIN_AMOUNT, amount)
         values.put(COLUMN_FIN_TYPE, type)
@@ -119,10 +124,10 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
         return db.insert(TABLE_FINANCE, null, values)
     }
 
-    fun getAllTransactions(): List<Map<String, Any>> {
+    fun getAllTransactions(userId: Int): List<Map<String, Any>> {
         val list = mutableListOf<Map<String, Any>>()
         val db = this.readableDatabase
-        val cursor = db.rawQuery("SELECT * FROM $TABLE_FINANCE ORDER BY id DESC", null)
+        val cursor = db.rawQuery("SELECT * FROM $TABLE_FINANCE WHERE $COLUMN_FIN_USER_ID=? ORDER BY id DESC", arrayOf(userId.toString()))
         if (cursor.moveToFirst()) {
             do {
                 val map = mutableMapOf<String, Any>()
@@ -162,9 +167,10 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
     }
 
     // Savings Goals operations
-    fun addGoal(name: String, targetAmount: Double, currentAmount: Double, deadline: String): Long {
+    fun addGoal(userId: Int, name: String, targetAmount: Double, currentAmount: Double, deadline: String): Long {
         val db = this.writableDatabase
         val values = ContentValues()
+        values.put(COLUMN_GOAL_USER_ID, userId)
         values.put(COLUMN_GOAL_NAME, name)
         values.put(COLUMN_GOAL_TARGET_AMOUNT, targetAmount)
         values.put(COLUMN_GOAL_CURRENT_AMOUNT, currentAmount)
@@ -172,10 +178,10 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
         return db.insert(TABLE_GOALS, null, values)
     }
 
-    fun getAllGoals(): List<Map<String, Any>> {
+    fun getAllGoals(userId: Int): List<Map<String, Any>> {
         val list = mutableListOf<Map<String, Any>>()
         val db = this.readableDatabase
-        val cursor = db.rawQuery("SELECT * FROM $TABLE_GOALS", null)
+        val cursor = db.rawQuery("SELECT * FROM $TABLE_GOALS WHERE $COLUMN_GOAL_USER_ID=?", arrayOf(userId.toString()))
         if (cursor.moveToFirst()) {
             do {
                 val map = mutableMapOf<String, Any>()

@@ -16,6 +16,15 @@ class SessionManager(context: Context) {
         return sharedPreferences.getBoolean("isLoggedIn", false)
     }
 
+    fun setUserId(id: Int) {
+        editor.putInt("userId", id)
+        editor.apply()
+    }
+
+    fun getUserId(): Int {
+        return sharedPreferences.getInt("userId", -1)
+    }
+
     fun setUserName(name: String) {
         editor.putString("userName", name)
         editor.apply()
@@ -45,21 +54,25 @@ class SessionManager(context: Context) {
 
     // Budget Target methods
     fun setBudgetTarget(amount: Float) {
-        editor.putFloat("budgetTarget", amount)
+        val userId = getUserId()
+        editor.putFloat("budgetTarget_$userId", amount)
         editor.apply()
     }
 
     fun getBudgetTarget(): Float {
-        return sharedPreferences.getFloat("budgetTarget", 0f)
+        val userId = getUserId()
+        return sharedPreferences.getFloat("budgetTarget_$userId", 0f)
     }
 
     fun setBudgetType(type: String) {
-        editor.putString("budgetType", type)
+        val userId = getUserId()
+        editor.putString("budgetType_$userId", type)
         editor.apply()
     }
 
     fun getBudgetType(): String {
-        return sharedPreferences.getString("budgetType", "Bulanan") ?: "Bulanan"
+        val userId = getUserId()
+        return sharedPreferences.getString("budgetType_$userId", "Bulanan") ?: "Bulanan"
     }
 
     // New Preferences
