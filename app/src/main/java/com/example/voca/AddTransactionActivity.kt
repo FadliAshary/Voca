@@ -131,29 +131,36 @@ class AddTransactionActivity : AppCompatActivity() {
         
         if (amountStr.isNotEmpty()) {
             val amount = amountStr.toDoubleOrNull() ?: 0.0
-            val date = SimpleDateFormat("dd MMM yyyy", Locale.getDefault()).format(calendar.time)
             
-            // Gunakan API Retrofit untuk menyimpan ke XAMPP
-            val apiService = ApiService.create()
-            apiService.addTransaction(title, amount, type, selectedCategory, date)
+            // Format tanggal untuk SQLite (Lokal)
+            val dateLocal = SimpleDateFormat("dd MMM yyyy", Locale.getDefault()).format(calendar.time)
+            // Format tanggal untuk MySQL (Server YYYY-MM-DD)
+            val dateServer = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(calendar.time)
+            
+            // 1. Simpan ke Database Lokal (Agar langsung muncul di Home)
+            db.addTransaction(title, amount, type, selectedCategory, dateLocal)
+
+            // 2. Simpan ke Server XAMPP
+            val apiService = ApiService.getInstance()
+            apiService.addTransaction(title, amount, type, selectedCategory, dateServer)
                 .enqueue(object : Callback<Map<String, Any>> {
                     override fun onResponse(
                         call: retrofit2.Call<Map<String, Any>>,
                         response: Response<Map<String, Any>>
                     ) {
                         if (response.isSuccessful) {
-                            Toast.makeText(this@AddTransactionActivity, "Transaksi Berhasil Disimpan ke Server", Toast.LENGTH_SHORT).show()
+                            Toast.makeText(this@AddTransactionActivity, "Berhasil disimpan ke Server & Lokal", Toast.LENGTH_SHORT).show()
                             finish()
                         } else {
-                            Toast.makeText(this@AddTransactionActivity, "Gagal Menyimpan Transaksi", Toast.LENGTH_SHORT).show()
+                            // Tetap finish karena sudah masuk lokal
+                            Toast.makeText(this@AddTransactionActivity, "Tersimpan Lokal, Gagal Sinkron ke Server", Toast.LENGTH_SHORT).show()
+                            finish()
                         }
                     }
 
-                    override fun onFailure(
-                        call: retrofit2.Call<Map<String, Any>>,
-                        t: Throwable
-                    ) {
-                        Toast.makeText(this@AddTransactionActivity, "Error: ${t.message}", Toast.LENGTH_SHORT).show()
+                    override fun onFailure(call: retrofit2.Call<Map<String, Any>>, t: Throwable) {
+                        Toast.makeText(this@AddTransactionActivity, "Koneksi Gagal, Tersimpan di Lokal Saja", Toast.LENGTH_SHORT).show()
+                        finish()
                     }
                 })
         } else {

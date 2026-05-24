@@ -1,6 +1,7 @@
 package com.example.voca.api
 
 import com.example.voca.model.*
+import retrofit2.Call
 import retrofit2.Response
 import retrofit2.http.*
 
@@ -39,21 +40,51 @@ interface ApiService {
 
     // ── AUTH ENDPOINTS ──────────────────────────────────────────
 
-    // POST login
+    @FormUrlEncoded
+    @POST("login.php")
+    fun login(
+        @Field("email") email: String,
+        @Field("password") password: String
+    ): Call<Map<String, Any>>
+
+    @FormUrlEncoded
+    @POST("register.php")
+    fun register(
+        @Field("name") name: String,
+        @Field("email") email: String,
+        @Field("password") password: String
+    ): Call<Map<String, Any>>
+
+    // Suspend versions for Coroutines
     @POST("auth.php")
-    suspend fun login(
+    suspend fun loginSuspend(
         @Query("action") action: String = "login",
         @Body request: LoginRequest
     ): Response<ApiResponse<UserApiModel>>
 
-    // POST register
     @POST("auth.php")
-    suspend fun register(
+    suspend fun registerSuspend(
         @Query("action") action: String = "register",
         @Body request: RegisterRequest
     ): Response<ApiResponse<Map<String, Int>>>
 
-    // Placeholder for compatibility if needed
-    // @GET("tips.php")
-    // suspend fun getTips(): Response<List<FinanceTip>>
+    @GET("tips.php")
+    fun getTips(): Call<List<FinanceTip>>
+
+    // ── TRANSACTION ENDPOINTS ───────────────────────────────────
+
+    @FormUrlEncoded
+    @POST("add_transaction.php")
+    fun addTransaction(
+        @Field("title") title: String,
+        @Field("amount") amount: Double,
+        @Field("type") type: String,
+        @Field("category") category: String,
+        @Field("date") date: String
+    ): Call<Map<String, Any>>
+
+    companion object {
+        fun create(): ApiService = RetrofitClient.apiService
+        fun getInstance(): ApiService = RetrofitClient.apiService
+    }
 }

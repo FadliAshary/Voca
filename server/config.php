@@ -1,12 +1,12 @@
 <?php
-// config.php
-// DB configuration used by the PHP scripts. Adjust if your XAMPP/MySQL uses different credentials.
+$host = "localhost";
+$user = "root";
+$pass = "";
+$db   = "voca_db";
 
-return [
-    'host' => 'localhost',
-    'username' => 'root',
-    'password' => '',
-    'dbname' => 'voca_db',
-    'charset' => 'utf8mb4'
-];
+$conn = new mysqli($host, $user, $pass, $db);
 
+if ($conn->connect_error) {
+    die(json_encode(["success" => false, "message" => "Koneksi database gagal: " . $conn->connect_error]));
+}
+?>

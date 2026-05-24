@@ -48,7 +48,7 @@ class HomeFragment : Fragment() {
         var totalExpense = 0.0
 
         for (t in transactions) {
-            val amount = t["amount"] as Double
+            val amount = (t["amount"] as? Double) ?: 0.0
             if (t["type"] == "income") totalIncome += amount else totalExpense += amount
         }
 
@@ -76,7 +76,7 @@ class HomeFragment : Fragment() {
     }
 
     private fun updateRecentTransactions(transactions: List<Map<String, Any>>) {
-        val container = binding.cardRecentTransactions.getChildAt(0) as LinearLayout
+        val container = binding.containerRecentTransactions
         container.removeAllViews()
 
         if (transactions.isEmpty()) {
@@ -98,12 +98,12 @@ class HomeFragment : Fragment() {
             val tvAmount = itemView.findViewById<TextView>(R.id.tvTransAmount)
             val ivIcon = itemView.findViewById<ImageView>(R.id.ivTransIcon)
 
-            val title = t["title"] as String
-            val amount = t["amount"] as Double
-            val type = t["type"] as String
-            val category = t["category"] as? String ?: "Lainnya"
-            val date = t["date"] as String
-            val id = t["id"] as Int
+            val title = t["title"]?.toString() ?: "-"
+            val amount = (t["amount"] as? Double) ?: 0.0
+            val type = t["type"]?.toString() ?: "expense"
+            val category = t["category"]?.toString() ?: "Lainnya"
+            val date = t["date"]?.toString() ?: "-"
+            val id = (t["id"] as? Int) ?: -1
 
             tvTitle.text = title
             tvDate.text = date

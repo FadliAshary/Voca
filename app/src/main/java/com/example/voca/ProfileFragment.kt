@@ -136,19 +136,19 @@ class ProfileFragment : Fragment() {
         var periodIncome = 0.0
         var periodExpense = 0.0
         for (t in filteredTransactions) {
-            val amount = t["amount"] as Double
+            val amount = (t["amount"] as? Double) ?: 0.0
             if (t["type"] == "income") periodIncome += amount else periodExpense += amount
         }
 
         var totalIncome = 0.0
         var totalExpense = 0.0
         for (t in allTransactions) {
-            val amount = t["amount"] as Double
+            val amount = (t["amount"] as? Double) ?: 0.0
             if (t["type"] == "income") totalIncome += amount else totalExpense += amount
         }
 
         val netWorth = totalIncome - totalExpense
-        val totalSavings = goals.sumOf { it["current_amount"] as Double }
+        val totalSavings = goals.sumOf { (it["current_amount"] as? Double) ?: 0.0 }
 
         val formatter = getCurrencyFormatter()
         binding.tvNetWorth.text = formatter.format(netWorth).replace("Rp", "Rp ")

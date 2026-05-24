@@ -1,47 +1,54 @@
 <?php
-// install_db.php
-// Run this once to create the database and table. Place in your XAMPP htdocs/voca_db/ and open in browser.
+header('Content-Type: text/plain');
 
-header('Content-Type: application/json; charset=utf-8');
-header('Access-Control-Allow-Origin: *');
+$host = "localhost";
+$user = "root";
+$pass = "";
+$db   = "voca_db";
 
-$config = require __DIR__ . '/config.php';
+$conn = new mysqli($host, $user, $pass);
 
-$mysqli = new mysqli($config['host'], $config['username'], $config['password']);
-if ($mysqli->connect_error) {
-    echo json_encode(['success' => false, 'message' => 'Connection failed: ' . $mysqli->connect_error]);
-    exit;
+if ($conn->connect_error) {
+    die("Koneksi gagal: " . $conn->connect_error);
 }
 
-$dbname = $mysqli->real_escape_string($config['dbname']);
-$sql = "CREATE DATABASE IF NOT EXISTS `{$dbname}` DEFAULT CHARACTER SET {$config['charset']} COLLATE {$config['charset']}_unicode_ci";
-if (!$mysqli->query($sql)) {
-    echo json_encode(['success' => false, 'message' => 'Could not create database: ' . $mysqli->error]);
-    $mysqli->close();
-    exit;
+// Buat Database
+$conn->query("CREATE DATABASE IF NOT EXISTS $db");
+$conn->select_db($db);
+
+// Buat Tabel Users
+$tableUsers = "CREATE TABLE IF NOT EXISTS users (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(100) NOT NULL,
+    email VARCHAR(100) NOT NULL UNIQUE,
+    password VARCHAR(255) NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+)";
+
+if ($conn->query($tableUsers)) {
+    echo "Tabel 'users' siap.\n";
+} else {
+    echo "Gagal membuat tabel users: " . $conn->error . "\n";
 }
 
-// Select the database
-$mysqli->select_db($dbname);
+// Buat Tabel Finance
+$tableFinance = "CREATE TABLE IF NOT EXISTS finance (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT,
+    title VARCHAR(255) NOT NULL,
+    amount DECIMAL(15,2) NOT NULL,
+    type ENUM('income', 'expense') NOT NULL,
+    category VARCHAR(100),
+    date DATE NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+)";
 
-$createTable = "CREATE TABLE IF NOT EXISTS `finance` (
-  `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
-  `title` VARCHAR(255) NOT NULL,
-  `amount` DECIMAL(15,2) NOT NULL,
-  `type` ENUM('income','expense') NOT NULL,
-  `category` VARCHAR(100) DEFAULT NULL,
-  `date` DATE NOT NULL,
-  `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET={$config['charset']} COLLATE {$config['charset']}_unicode_ci";
-
-if (!$mysqli->query($createTable)) {
-    echo json_encode(['success' => false, 'message' => 'Could not create table: ' . $mysqli->error]);
-    $mysqli->close();
-    exit;
+if ($conn->query($tableFinance)) {
+    echo "Tabel 'finance' siap.\n";
+} else {
+    echo "Gagal membuat tabel finance: " . $conn->error . "\n";
 }
 
-$mysqli->close();
-
-echo json_encode(['success' => true, 'message' => 'Database and table ready', 'database' => $config['dbname']]);
-
+echo "\nSetup Selesai! Database '$db' sudah siap digunakan.";
+$conn->close();
+?>
