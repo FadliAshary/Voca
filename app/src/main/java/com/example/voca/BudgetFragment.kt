@@ -15,6 +15,7 @@ import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
 import com.example.voca.database.DatabaseHelper
 import com.example.voca.databinding.FragmentBudgetBinding
+import com.example.voca.utils.CurrencyUtils
 import com.example.voca.utils.SessionManager
 import java.text.DecimalFormat
 import java.text.NumberFormat
@@ -58,10 +59,26 @@ class BudgetFragment : Fragment() {
         val etAmount = view.findViewById<EditText>(R.id.etDialogBudgetAmount)
         val btnWeekly = view.findViewById<TextView>(R.id.tvDialogWeekly)
         val btnMonthly = view.findViewById<TextView>(R.id.tvDialogMonthly)
+        val btnRefresh = view.findViewById<View>(R.id.btnDialogRefresh)
         
         var selectedType = session.getBudgetType()
-        val currentTarget = session.getBudgetTarget().toLong()
+        val currencyCode = session.getCurrency()
+        val currentTargetRaw = session.getBudgetTarget().toDouble()
+        val currentTarget = CurrencyUtils.convertFromIDR(currentTargetRaw, currencyCode)
         
+        // Cek apakah budget sudah tercapai untuk menampilkan tombol refresh
+        val userId = session.getUserId()
+        val transactions = db.getAllTransactions(userId)
+        val budgetOffset = session.getBudgetOffset().toDouble()
+        val rawExpense = calculateCurrentPeriodExpense(transactions, selectedType)
+        val currentDisplayExpense = (rawExpense - budgetOffset).coerceAtLeast(0.0)
+        
+        if (currentTarget > 0 && currentDisplayExpense >= currentTarget) {
+            btnRefresh.visibility = View.VISIBLE
+        } else {
+            btnRefresh.visibility = View.GONE
+        }
+
         // Format nominal awal dengan titik
         if (currentTarget > 0) {
             etAmount.setText(DecimalFormat("#,###").format(currentTarget).replace(",", "."))
@@ -117,24 +134,60 @@ class BudgetFragment : Fragment() {
         }
 
         view.findViewById<View>(R.id.btnDialogSave).setOnClickListener {
-            val amount = etAmount.text.toString().replace(".", "").toFloatOrNull() ?: 0f
+            val amountStr = etAmount.text.toString().replace(".", "")
+            var amount = amountStr.toFloatOrNull() ?: 0f
+            
+            // Konversi kembali ke IDR sebelum disimpan
+            if (currencyCode != "IDR") {
+                amount = CurrencyUtils.convertToIDR(amount.toDouble(), currencyCode).toFloat()
+            }
+
             session.setBudgetTarget(amount)
             session.setBudgetType(selectedType)
+            // Hapus reset date dan offset jika target diubah/diset baru
+            session.setBudgetResetDate("") 
+            session.setBudgetOffset(0f)
             updateUI()
             dialog.dismiss()
+        }
+
+        btnRefresh.setOnClickListener {
+            val userId = session.getUserId()
+            val transactions = db.getAllTransactions(userId)
+            val currentTotal = calculateCurrentPeriodExpense(transactions, selectedType)
+            session.setBudgetOffset(currentTotal.toFloat())
+            updateUI()
+            dialog.dismiss()
+            android.widget.Toast.makeText(requireContext(), "Anggaran berhasil di-refresh (dimulai dari 0)", android.widget.Toast.LENGTH_SHORT).show()
         }
 
         dialog.show()
     }
 
+    private fun calculateCurrentPeriodExpense(transactions: List<Map<String, Any>>, budgetType: String): Double {
+        val now = Calendar.getInstance()
+
+        return transactions.filter { t ->
+            val dateStr = t["date"] as String
+            val type = t["type"] as String
+            if (type != "expense") return@filter false
+            
+            try {
+                val date = SimpleDateFormat("dd MMM yyyy", Locale.getDefault()).parse(dateStr) ?: return@filter false
+                val cal = Calendar.getInstance().apply { time = date }
+                if (budgetType == "Mingguan") {
+                    now.get(Calendar.WEEK_OF_YEAR) == cal.get(Calendar.WEEK_OF_YEAR) &&
+                    now.get(Calendar.YEAR) == cal.get(Calendar.YEAR)
+                } else {
+                    now.get(Calendar.MONTH) == cal.get(Calendar.MONTH) &&
+                    now.get(Calendar.YEAR) == cal.get(Calendar.YEAR)
+                }
+            } catch (e: Exception) { false }
+        }.sumOf { it["amount"] as Double }
+    }
+
     private fun getCurrencyFormatter(): NumberFormat {
-        val currencyCode = session.getCurrency()
-        return when (currencyCode) {
-            "USD" -> NumberFormat.getCurrencyInstance(Locale.US)
-            "EUR" -> NumberFormat.getCurrencyInstance(Locale.GERMANY)
-            "JPY" -> NumberFormat.getCurrencyInstance(Locale.JAPAN)
-            else -> NumberFormat.getCurrencyInstance(Locale("id", "ID"))
-        }
+        return CurrencyUtils.getFormatter(session.getCurrency())
     }
 
     private fun updateUI() {
@@ -145,6 +198,8 @@ class BudgetFragment : Fragment() {
         val now = Calendar.getInstance()
         
         val budgetType = session.getBudgetType()
+        val budgetOffset = session.getBudgetOffset().toDouble()
+
         val filteredTransactions = transactions.filter { t ->
             val dateStr = t["date"] as String
             try {
@@ -169,18 +224,21 @@ class BudgetFragment : Fragment() {
         }
 
         val budgetTarget = session.getBudgetTarget().toDouble()
-        val currentPeriodExpense = filteredTransactions.filter { it["type"] == "expense" }.sumOf { it["amount"] as Double }
+        val totalExpense = filteredTransactions.filter { it["type"] == "expense" }.sumOf { it["amount"] as Double }
+        
+        // Terapkan offset refresh
+        val currentPeriodExpense = (totalExpense - budgetOffset).coerceAtLeast(0.0)
         val remainingBudget = (budgetTarget - currentPeriodExpense).coerceAtLeast(0.0)
 
-        val formatter = getCurrencyFormatter()
+        val currencyCode = session.getCurrency()
         binding.tvMonth.text = "${monthFormat.format(Date())} ($budgetType)"
-        binding.tvRemainingBudget.text = formatter.format(remainingBudget).replace("Rp", "Rp ")
+        binding.tvRemainingBudget.text = CurrencyUtils.formatCurrency(remainingBudget, currencyCode)
         
         val percentUsed = if (budgetTarget > 0) ((currentPeriodExpense / budgetTarget) * 100).toInt().coerceIn(0, 100) else 0
         binding.pbBudget.progress = percentUsed
         
-        val expenseStr = formatter.format(currentPeriodExpense).replace("Rp", "Rp ")
-        val targetStr = formatter.format(budgetTarget).replace("Rp", "Rp ")
+        val expenseStr = CurrencyUtils.formatCurrency(currentPeriodExpense, currencyCode)
+        val targetStr = CurrencyUtils.formatCurrency(budgetTarget, currencyCode)
         binding.tvBudgetStatus.text = "$percentUsed% terpakai ($expenseStr dari target $targetStr)"
 
         updateCategoryList(categoryExpenses)
@@ -251,12 +309,13 @@ class BudgetFragment : Fragment() {
             val current = goal["current_amount"] as Double
             val deadline = goal["deadline"] as String
 
+            val currencyCode = session.getCurrency()
             tvName.text = name
             val percent = if (target > 0) ((current / target) * 100).toInt().coerceIn(0, 100) else 0
             tvPercent.text = "$percent%"
             pbGoal.progress = percent
-            tvCurrent.text = "${formatter.format(current).replace("Rp", "Rp ")} terkumpul"
-            tvTarget.text = "Target: ${formatter.format(target).replace("Rp", "Rp ")}"
+            tvCurrent.text = "${CurrencyUtils.formatCurrency(current, currencyCode)} terkumpul"
+            tvTarget.text = "Target: ${CurrencyUtils.formatCurrency(target, currencyCode)}"
             tvDeadline.text = "Tenggat: $deadline"
 
             itemView.setOnClickListener {

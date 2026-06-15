@@ -12,6 +12,7 @@ import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
 import com.example.voca.database.DatabaseHelper
 import com.example.voca.databinding.FragmentProfileBinding
+import com.example.voca.utils.CurrencyUtils
 import com.example.voca.utils.SessionManager
 import java.text.NumberFormat
 import java.text.SimpleDateFormat
@@ -122,13 +123,7 @@ class ProfileFragment : Fragment() {
     }
 
     private fun getCurrencyFormatter(): NumberFormat {
-        val currencyCode = session.getCurrency()
-        return when (currencyCode) {
-            "USD" -> NumberFormat.getCurrencyInstance(Locale.US)
-            "EUR" -> NumberFormat.getCurrencyInstance(Locale.GERMANY)
-            "JPY" -> NumberFormat.getCurrencyInstance(Locale.JAPAN)
-            else -> NumberFormat.getCurrencyInstance(Locale("id", "ID"))
-        }
+        return CurrencyUtils.getFormatter(session.getCurrency())
     }
 
     private fun updateStats() {
@@ -155,8 +150,8 @@ class ProfileFragment : Fragment() {
         val netWorth = totalIncome - totalExpense
         val totalSavings = goals.sumOf { (it["current_amount"] as? Double) ?: 0.0 }
 
-        val formatter = getCurrencyFormatter()
-        binding.tvNetWorth.text = formatter.format(netWorth).replace("Rp", "Rp ")
+        val currencyCode = session.getCurrency()
+        binding.tvNetWorth.text = CurrencyUtils.formatCurrency(netWorth, currencyCode)
         
         if (netWorth >= 0) {
             binding.tvNetWorth.setTextColor(android.graphics.Color.parseColor("#003285"))

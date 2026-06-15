@@ -75,6 +75,28 @@ class SessionManager(context: Context) {
         return sharedPreferences.getString("budgetType_$userId", "Bulanan") ?: "Bulanan"
     }
 
+    fun setBudgetResetDate(date: String) {
+        val userId = getUserId()
+        editor.putString("budgetResetDate_$userId", date)
+        editor.apply()
+    }
+
+    fun getBudgetResetDate(): String? {
+        val userId = getUserId()
+        return sharedPreferences.getString("budgetResetDate_$userId", null)
+    }
+
+    fun setBudgetOffset(amount: Float) {
+        val userId = getUserId()
+        editor.putFloat("budgetOffset_$userId", amount)
+        editor.apply()
+    }
+
+    fun getBudgetOffset(): Float {
+        val userId = getUserId()
+        return sharedPreferences.getFloat("budgetOffset_$userId", 0f)
+    }
+
     // New Preferences
     fun setCurrency(currency: String) {
         editor.putString("currency", currency)

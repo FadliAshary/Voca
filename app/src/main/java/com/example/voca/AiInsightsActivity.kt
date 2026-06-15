@@ -4,13 +4,14 @@ import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import com.example.voca.database.DatabaseHelper
 import com.example.voca.databinding.ActivityAiInsightsBinding
-import java.text.NumberFormat
+import com.example.voca.utils.CurrencyUtils
+import com.example.voca.utils.SessionManager
 import java.util.*
 
 class AiInsightsActivity : AppCompatActivity() {
     private lateinit var binding: ActivityAiInsightsBinding
     private lateinit var db: DatabaseHelper
-    private lateinit var session: com.example.voca.utils.SessionManager
+    private lateinit var session: SessionManager
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -18,7 +19,7 @@ class AiInsightsActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         db = DatabaseHelper(this)
-        session = com.example.voca.utils.SessionManager(this)
+        session = SessionManager(this)
 
         binding.toolbar.setNavigationOnClickListener { finish() }
 
@@ -65,7 +66,7 @@ class AiInsightsActivity : AppCompatActivity() {
             }
         }
 
-        val formatter = NumberFormat.getCurrencyInstance(Locale("id", "ID"))
+        val currencyCode = session.getCurrency()
         val netWorth = totalIncome - totalExpense
 
         // 1. Predictive Logic (Advanced)
@@ -75,14 +76,14 @@ class AiInsightsActivity : AppCompatActivity() {
 
         prediction = when {
             netWorth < 0 -> {
-                "⚠️ Darurat Keuangan: Saldo Anda minus ${formatter.format(Math.abs(netWorth))}. Prediksi AI: Jika pola ini berlanjut, Anda akan mengalami kesulitan finansial dalam 7 hari ke depan. Segera hentikan pengeluaran non-esensial."
+                "⚠️ Darurat Keuangan: Saldo Anda minus ${CurrencyUtils.formatCurrency(Math.abs(netWorth), currencyCode)}. Prediksi AI: Jika pola ini berlanjut, Anda akan mengalami kesulitan finansial dalam 7 hari ke depan. Segera hentikan pengeluaran non-esensial."
             }
             avgDailyExpense > dailyBudget && totalIncome > 0 -> {
-                "📉 Tren Negatif: Pengeluaran harian Anda (${formatter.format(avgDailyExpense)}) melebihi batas aman harian (${formatter.format(dailyBudget)}). Prediksi: Saldo Anda akan habis dalam waktu sekitar ${(netWorth / avgDailyExpense).toInt()} hari."
+                "📉 Tren Negatif: Pengeluaran harian Anda (${CurrencyUtils.formatCurrency(avgDailyExpense, currencyCode)}) melebihi batas aman harian (${CurrencyUtils.formatCurrency(dailyBudget, currencyCode)}). Prediksi: Saldo Anda akan habis dalam waktu sekitar ${(netWorth / avgDailyExpense).toInt()} hari."
             }
             totalIncome > 0 && totalExpense > 0 -> {
                 val savingsRate = (netWorth / totalIncome) * 100
-                "📈 Tren Positif: Anda menabung ${String.format(Locale.getDefault(), "%.1f", savingsRate)}% dari pendapatan. Prediksi: Dalam 6 bulan, kekayaan bersih Anda diprediksi mencapai ${formatter.format(netWorth + (netWorth * 6))}. Pertahankan!"
+                "📈 Tren Positif: Anda menabung ${String.format(Locale.getDefault(), "%.1f", savingsRate)}% dari pendapatan. Prediksi: Dalam 6 bulan, kekayaan bersih Anda diprediksi mencapai ${CurrencyUtils.formatCurrency(netWorth + (netWorth * 6), currencyCode)}. Pertahankan!"
             }
             else -> "Belum ada data yang cukup untuk analisis AI. Terus catat transaksi Anda selama 30 hari."
         }
@@ -92,7 +93,7 @@ class AiInsightsActivity : AppCompatActivity() {
         val topCategory = categoryTotals.maxByOrNull { it.value }
         val savingTip = if (topCategory != null && totalExpense > 0) {
             val percentage = (topCategory.value / totalExpense) * 100
-            "💡 Tips Hemat: Kategori '${topCategory.key}' menghabiskan ${String.format(Locale.getDefault(), "%.1f", percentage)}% total pengeluaran Anda. AI menyarankan untuk beralih ke alternatif yang lebih murah untuk kategori ini guna menambah tabungan sebesar ${formatter.format(topCategory.value * 0.2)} per bulan."
+            "💡 Tips Hemat: Kategori '${topCategory.key}' menghabiskan ${String.format(Locale.getDefault(), "%.1f", percentage)}% total pengeluaran Anda. AI menyarankan untuk beralih ke alternatif yang lebih murah untuk kategori ini guna menambah tabungan sebesar ${CurrencyUtils.formatCurrency(topCategory.value * 0.2, currencyCode)} per bulan."
         } else {
             "Gunakan kategori saat mencatat transaksi agar AI bisa memberikan saran penghematan yang spesifik."
         }
@@ -111,7 +112,7 @@ class AiInsightsActivity : AppCompatActivity() {
             } else {
                 val monthsToGoal = if (netWorth > 0) remaining / (netWorth / 2) else Double.POSITIVE_INFINITY
                 if (monthsToGoal < 100) {
-                    "🎯 Fokus Target: Dengan sisa ${formatter.format(remaining)}, Anda diprediksi mencapai '$name' dalam ${String.format(Locale.getDefault(), "%.1f", monthsToGoal)} bulan jika konsisten menabung setengah dari surplus bulanan."
+                    "🎯 Fokus Target: Dengan sisa ${CurrencyUtils.formatCurrency(remaining, currencyCode)}, Anda diprediksi mencapai '$name' dalam ${String.format(Locale.getDefault(), "%.1f", monthsToGoal)} bulan jika konsisten menabung setengah dari surplus bulanan."
                 } else {
                     "🎯 Fokus Target: Target '$name' masih jauh. AI menyarankan peningkatan pendapatan atau pengurangan biaya hidup sebesar 15% untuk mempercepat pencapaian."
                 }

@@ -1,29 +1,59 @@
 package com.example.voca
 
 import android.app.DatePickerDialog
+import android.content.Intent
 import android.content.res.ColorStateList
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.graphics.Color
 import android.os.Bundle
+import android.provider.MediaStore
+import android.view.View
 import android.widget.ImageView
 import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import com.example.voca.api.ApiService
 import com.example.voca.database.DatabaseHelper
 import com.example.voca.databinding.ActivityAddTransactionBinding
+import com.example.voca.utils.CurrencyUtils
+import com.example.voca.utils.ReceiptScanner
+import com.example.voca.utils.SessionManager
 import retrofit2.Callback
 import retrofit2.Response
+import java.io.File
+import java.io.FileOutputStream
 import java.text.SimpleDateFormat
 import java.util.*
 
 class AddTransactionActivity : AppCompatActivity() {
     private lateinit var binding: ActivityAddTransactionBinding
     private lateinit var db: DatabaseHelper
-    private lateinit var session: com.example.voca.utils.SessionManager
+    private lateinit var session: SessionManager
     private var selectedCategory = "Makanan"
     private var calendar = Calendar.getInstance()
     private var selectedAccount = "Tabungan Utama"
+    private var currentImagePath: String? = null
+    private val scanner = ReceiptScanner()
+
+    private val cameraLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+        if (result.resultCode == RESULT_OK) {
+            val bitmap = result.data?.extras?.get("data") as? Bitmap
+            bitmap?.let { processReceipt(it) }
+        }
+    }
+
+    private val galleryLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+        if (result.resultCode == RESULT_OK) {
+            val imageUri = result.data?.data
+            imageUri?.let {
+                val bitmap = MediaStore.Images.Media.getBitmap(this.contentResolver, it)
+                processReceipt(bitmap)
+            }
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -40,9 +70,40 @@ class AddTransactionActivity : AppCompatActivity() {
         setupUploadReceipt()
         
         updateDateDisplay()
+        handleIntentExtras()
 
         binding.btnSave.setOnClickListener {
             saveTransaction()
+        }
+    }
+
+    private fun handleIntentExtras() {
+        val amount = intent.getDoubleExtra("EXTRA_AMOUNT", -1.0)
+        if (amount != -1.0) {
+            // Hilangkan .0 jika itu bilangan bulat agar lebih enak dilihat
+            val displayAmount = if (amount % 1 == 0.0) amount.toLong().toString() else amount.toString()
+            binding.etAmount.setText(displayAmount)
+        }
+        
+        val ocrText = intent.getStringExtra("EXTRA_OCR_TEXT")
+        if (!ocrText.isNullOrEmpty()) {
+            // Coba tebak judul dari baris pertama teks OCR yang bukan angka
+            val firstLine = ocrText.split("\n").firstOrNull { it.length > 3 && !it.any { c -> c.isDigit() } }
+            if (firstLine != null) {
+                binding.etTitle.setText(firstLine.trim())
+            }
+        }
+
+        val imagePath = intent.getStringExtra("EXTRA_IMAGE_PATH")
+        if (!imagePath.isNullOrEmpty()) {
+            currentImagePath = imagePath
+            val imgFile = File(imagePath)
+            if (imgFile.exists()) {
+                val myBitmap = BitmapFactory.decodeFile(imgFile.absolutePath)
+                binding.ivReceiptPreview.setImageBitmap(myBitmap)
+                binding.ivReceiptPreview.visibility = View.VISIBLE
+                binding.layoutUploadPlaceholder.visibility = View.GONE
+            }
         }
     }
 
@@ -87,8 +148,70 @@ class AddTransactionActivity : AppCompatActivity() {
 
     private fun setupUploadReceipt() {
         binding.btnUploadReceipt.setOnClickListener {
-            // Mock functionality for receipt upload
-            Toast.makeText(this, "Fitur Unggah Struk akan segera hadir!", Toast.LENGTH_SHORT).show()
+            val options = arrayOf("Ambil Foto Struk", "Pilih dari Galeri")
+            AlertDialog.Builder(this)
+                .setTitle("Scan Struk Otomatis")
+                .setItems(options) { _, which ->
+                    when (which) {
+                        0 -> cameraLauncher.launch(Intent(MediaStore.ACTION_IMAGE_CAPTURE))
+                        1 -> galleryLauncher.launch(Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI))
+                    }
+                }
+                .show()
+        }
+    }
+
+    private fun processReceipt(bitmap: Bitmap) {
+        Toast.makeText(this, "Menganalisis struk...", Toast.LENGTH_SHORT).show()
+
+        // Simpan gambar secara lokal
+        currentImagePath = saveImageToInternalStorage(bitmap)
+        binding.ivReceiptPreview.setImageBitmap(bitmap)
+        binding.ivReceiptPreview.visibility = View.VISIBLE
+        binding.layoutUploadPlaceholder.visibility = View.GONE
+
+        scanner.scanReceipt(bitmap,
+            onSuccess = { _, amount ->
+                if (amount != null) {
+                    val displayAmount = if (amount % 1 == 0.0) amount.toLong().toString() else amount.toString()
+                    val currentInput = binding.etAmount.text.toString()
+
+                    // Jika input masih kosong atau 0, langsung isi
+                    if (currentInput.isEmpty() || currentInput == "0") {
+                        binding.etAmount.setText(displayAmount)
+                        Toast.makeText(this, "Total ditemukan: Rp $displayAmount", Toast.LENGTH_SHORT).show()
+                    } else {
+                        // Jika sudah ada isinya, tanya user dulu
+                        AlertDialog.Builder(this)
+                            .setTitle("Struk Terdeteksi")
+                            .setMessage("Kami menemukan nominal Rp $displayAmount pada struk. Apakah Anda ingin mengganti nominal yang sudah Anda ketik?")
+                            .setPositiveButton("Ganti") { _, _ ->
+                                binding.etAmount.setText(displayAmount)
+                            }
+                            .setNegativeButton("Tetap Gunakan Input Saya", null)
+                            .show()
+                    }
+                } else {
+                    Toast.makeText(this, "Gagal menemukan total harga, silakan isi manual", Toast.LENGTH_SHORT).show()
+                }
+            },
+            onFailure = { e ->
+                Toast.makeText(this, "Error: ${e.message}", Toast.LENGTH_SHORT).show()
+            }
+        )
+    }
+
+    private fun saveImageToInternalStorage(bitmap: Bitmap): String {
+        val fileName = "receipt_${System.currentTimeMillis()}.jpg"
+        val file = File(getExternalFilesDir(null), fileName)
+        try {
+            val fos = FileOutputStream(file)
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 90, fos)
+            fos.close()
+            return file.absolutePath
+        } catch (e: Exception) {
+            e.printStackTrace()
+            return ""
         }
     }
 
@@ -132,7 +255,13 @@ class AddTransactionActivity : AppCompatActivity() {
         val type = if (binding.rbIncome.isChecked) "income" else "expense"
         
         if (amountStr.isNotEmpty()) {
-            val amount = amountStr.toDoubleOrNull() ?: 0.0
+            var amount = amountStr.toDoubleOrNull() ?: 0.0
+            
+            // Konversi input ke IDR (base) sebelum disimpan ke database
+            val currentCurrency = session.getCurrency()
+            if (currentCurrency != "IDR") {
+                amount = CurrencyUtils.convertToIDR(amount, currentCurrency)
+            }
             
             // Format tanggal untuk SQLite (Lokal)
             val dateLocal = SimpleDateFormat("dd MMM yyyy", Locale.getDefault()).format(calendar.time)
@@ -142,7 +271,7 @@ class AddTransactionActivity : AppCompatActivity() {
             val userId = session.getUserId()
 
             // 1. Simpan ke Database Lokal (Agar langsung muncul di Home)
-            db.addTransaction(userId, title, amount, type, selectedCategory, dateLocal)
+            db.addTransaction(userId, title, amount, type, selectedCategory, dateLocal, currentImagePath)
 
             // 2. Simpan ke Server XAMPP
             val apiService = ApiService.getInstance()

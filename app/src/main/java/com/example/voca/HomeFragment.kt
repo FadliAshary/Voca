@@ -11,8 +11,8 @@ import android.widget.TextView
 import androidx.fragment.app.Fragment
 import com.example.voca.database.DatabaseHelper
 import com.example.voca.databinding.FragmentHomeBinding
+import com.example.voca.utils.CurrencyUtils
 import com.example.voca.utils.SessionManager
-import java.text.NumberFormat
 import java.util.*
 
 class HomeFragment : Fragment() {
@@ -54,26 +54,15 @@ class HomeFragment : Fragment() {
         }
 
         val netWorth = totalIncome - totalExpense
-        
-        val formatter = getCurrencyFormatter()
+        val currencyCode = session.getCurrency()
         
         // Total Saldo = Net worth (overall money)
-        binding.tvTotalBalance.text = formatter.format(netWorth).replace("Rp", "Rp ")
+        binding.tvTotalBalance.text = CurrencyUtils.formatCurrency(netWorth, currencyCode)
         
-        binding.tvIncome.text = formatter.format(totalIncome).replace("Rp", "Rp ")
-        binding.tvExpense.text = formatter.format(totalExpense).replace("Rp", "Rp ")
+        binding.tvIncome.text = CurrencyUtils.formatCurrency(totalIncome, currencyCode)
+        binding.tvExpense.text = CurrencyUtils.formatCurrency(totalExpense, currencyCode)
 
         updateRecentTransactions(transactions)
-    }
-
-    private fun getCurrencyFormatter(): NumberFormat {
-        val currencyCode = session.getCurrency()
-        return when (currencyCode) {
-            "USD" -> NumberFormat.getCurrencyInstance(Locale.US)
-            "EUR" -> NumberFormat.getCurrencyInstance(Locale.GERMANY)
-            "JPY" -> NumberFormat.getCurrencyInstance(Locale.JAPAN)
-            else -> NumberFormat.getCurrencyInstance(Locale("id", "ID"))
-        }
     }
 
     private fun updateRecentTransactions(transactions: List<Map<String, Any>>) {
@@ -91,7 +80,7 @@ class HomeFragment : Fragment() {
             return
         }
 
-        val formatter = getCurrencyFormatter()
+        val currencyCode = session.getCurrency()
         transactions.take(10).forEach { t ->
             val itemView = layoutInflater.inflate(R.layout.item_transaction_simple, container, false)
             val tvTitle = itemView.findViewById<TextView>(R.id.tvTransTitle)
@@ -110,12 +99,12 @@ class HomeFragment : Fragment() {
             tvDate.text = date
 
             if (type == "income") {
-                tvAmount.text = "+${formatter.format(amount).replace("Rp", "Rp ")}"
+                tvAmount.text = "+${CurrencyUtils.formatCurrency(amount, currencyCode)}"
                 tvAmount.setTextColor(android.graphics.Color.parseColor("#48BB78"))
                 ivIcon.setImageResource(R.drawable.ic_income_default)
                 ivIcon.setBackgroundResource(R.drawable.circle_green_bg)
             } else {
-                tvAmount.text = "-${formatter.format(amount).replace("Rp", "Rp ")}"
+                tvAmount.text = "-${CurrencyUtils.formatCurrency(amount, currencyCode)}"
                 tvAmount.setTextColor(android.graphics.Color.parseColor("#F56565"))
                 
                 when (category) {

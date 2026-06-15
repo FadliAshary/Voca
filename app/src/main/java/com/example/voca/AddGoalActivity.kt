@@ -6,13 +6,15 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.example.voca.database.DatabaseHelper
 import com.example.voca.databinding.ActivityAddGoalBinding
+import com.example.voca.utils.CurrencyUtils
+import com.example.voca.utils.SessionManager
 import java.text.SimpleDateFormat
 import java.util.*
 
 class AddGoalActivity : AppCompatActivity() {
     private lateinit var binding: ActivityAddGoalBinding
     private lateinit var db: DatabaseHelper
-    private lateinit var session: com.example.voca.utils.SessionManager
+    private lateinit var session: SessionManager
     private var calendar = Calendar.getInstance()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -21,7 +23,7 @@ class AddGoalActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         db = DatabaseHelper(this)
-        session = com.example.voca.utils.SessionManager(this)
+        session = SessionManager(this)
 
         binding.toolbar.setNavigationOnClickListener { finish() }
 
@@ -45,9 +47,16 @@ class AddGoalActivity : AppCompatActivity() {
         val deadline = binding.tvGoalDeadline.text.toString()
 
         if (name.isNotEmpty() && targetStr.isNotEmpty()) {
-            val target = targetStr.toDoubleOrNull() ?: 0.0
-            val initial = initialStr.toDoubleOrNull() ?: 0.0
+            var target = targetStr.toDoubleOrNull() ?: 0.0
+            var initial = initialStr.toDoubleOrNull() ?: 0.0
             val userId = session.getUserId()
+            val currentCurrency = session.getCurrency()
+
+            // Konversi ke IDR sebelum disimpan
+            if (currentCurrency != "IDR") {
+                target = CurrencyUtils.convertToIDR(target, currentCurrency)
+                initial = CurrencyUtils.convertToIDR(initial, currentCurrency)
+            }
             
             val res = db.addGoal(userId, name, target, initial, deadline)
             if (res > 0) {

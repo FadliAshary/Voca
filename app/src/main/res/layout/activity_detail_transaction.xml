@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#F8FAFC">
+    android:background="@color/voca_light_gray">
 
     <com.google.android.material.appbar.AppBarLayout
         android:layout_width="match_parent"
@@ -84,12 +84,16 @@
                 android:textColor="@color/voca_text_gray"
                 android:textSize="14sp" />
 
-            <TextView
-                android:id="@+id/tvDetailAmount"
+            <EditText
+                android:id="@+id/etDetailAmount"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="4dp"
-                android:text="Rp400.000"
+                android:background="@null"
+                android:hint="0"
+                android:inputType="numberDecimal"
+                android:text="400.000"
+                android:textAlignment="center"
                 android:textColor="@color/voca_accent_yellow"
                 android:textSize="40sp"
                 android:textStyle="bold" />
@@ -123,20 +127,27 @@
                             android:textColor="@color/voca_text_gray"
                             android:textSize="12sp"
                             android:textStyle="bold" />
-                        <TextView
-                            android:id="@+id/tvDetailMerchant"
+                        <EditText
+                            android:id="@+id/etDetailMerchant"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_alignParentEnd="true"
+                            android:background="@null"
+                            android:hint="Nama Toko"
                             android:text="Blind Box"
+                            android:textAlignment="viewEnd"
                             android:textColor="@color/voca_dark_blue"
                             android:textSize="14sp"
                             android:textStyle="bold" />
                     </RelativeLayout>
 
                     <RelativeLayout
+                        android:id="@+id/rowDetailCategory"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:background="?attr/selectableItemBackground"
+                        android:clickable="true"
+                        android:focusable="true"
                         android:padding="20dp">
                         <TextView
                             android:layout_width="wrap_content"
@@ -150,15 +161,22 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_alignParentEnd="true"
+                            android:drawableEnd="@drawable/ic_arrow_down"
+                            android:drawablePadding="8dp"
                             android:text="shopping"
                             android:textColor="@color/voca_dark_blue"
                             android:textSize="14sp"
-                            android:textStyle="bold" />
+                            android:textStyle="bold"
+                            app:drawableTint="@color/voca_text_gray" />
                     </RelativeLayout>
 
                     <RelativeLayout
+                        android:id="@+id/rowDetailDate"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:background="?attr/selectableItemBackground"
+                        android:clickable="true"
+                        android:focusable="true"
                         android:padding="20dp">
                         <TextView
                             android:layout_width="wrap_content"
@@ -172,24 +190,32 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_alignParentEnd="true"
+                            android:drawableEnd="@drawable/ic_calendar"
+                            android:drawablePadding="8dp"
                             android:text="10 Mei"
                             android:textColor="@color/voca_dark_blue"
                             android:textSize="14sp"
-                            android:textStyle="bold" />
+                            android:textStyle="bold"
+                            app:drawableTint="@color/voca_text_gray" />
                     </RelativeLayout>
 
                     <RelativeLayout
+                        android:id="@+id/rowDetailType"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:background="?attr/selectableItemBackground"
+                        android:clickable="true"
+                        android:focusable="true"
                         android:padding="20dp">
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="STATUS"
+                            android:text="TIPE TRANSAKSI"
                             android:textColor="@color/voca_text_gray"
                             android:textSize="12sp"
                             android:textStyle="bold" />
                         <TextView
+                            android:id="@+id/tvDetailType"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_alignParentEnd="true"
@@ -197,7 +223,7 @@
                             android:backgroundTint="#E2F2FF"
                             android:paddingHorizontal="12dp"
                             android:paddingVertical="4dp"
-                            android:text="Selesai"
+                            android:text="Pengeluaran"
                             android:textColor="#3B82F6"
                             android:textSize="12sp"
                             android:textStyle="bold" />
@@ -216,25 +242,28 @@
 
             <com.google.android.material.card.MaterialCardView
                 android:layout_width="match_parent"
-                android:layout_height="200dp"
+                android:layout_height="wrap_content"
                 android:layout_marginTop="12dp"
                 app:cardCornerRadius="16dp"
                 app:cardElevation="0dp">
                 <FrameLayout
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent">
+                    android:layout_height="wrap_content"
+                    android:minHeight="100dp">
                     <ImageView
+                        android:id="@+id/ivDetailReceipt"
                         android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:scaleType="centerCrop"
+                        android:layout_height="wrap_content"
+                        android:adjustViewBounds="true"
+                        android:maxHeight="300dp"
+                        android:scaleType="centerInside"
                         android:src="@drawable/login_header_bg"
                         android:alpha="0.3" />
                     <LinearLayout
+                        android:id="@+id/layoutNoReceipt"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
-                        android:background="@drawable/logo_rounded_bg"
-                        android:backgroundTint="#F8FAFC"
                         android:gravity="center"
                         android:orientation="vertical"
                         android:padding="16dp">
@@ -247,7 +276,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="8dp"
-                            android:text="Ketuk untuk Memperbesar"
+                            android:text="Tidak ada bukti foto"
                             android:textColor="@color/voca_dark_blue"
                             android:textSize="12sp" />
                     </LinearLayout>

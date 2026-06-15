@@ -73,7 +73,8 @@ class SettingsFragment : Fragment() {
                 val selected = currencies[which]
                 session.setCurrency(selected)
                 binding.tvCurrentCurrency.text = selected
-                Toast.makeText(requireContext(), "Mata uang diubah ke $selected. Restart aplikasi untuk menerapkan ke semua halaman.", Toast.LENGTH_LONG).show()
+                Toast.makeText(requireContext(), "Mata uang diubah ke $selected", Toast.LENGTH_SHORT).show()
+                activity?.recreate()
             }
             .show()
     }

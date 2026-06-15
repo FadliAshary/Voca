@@ -9,7 +9,7 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
 
     companion object {
         private const val DATABASE_NAME = "voca_db"
-        private const val DATABASE_VERSION = 2
+        private const val DATABASE_VERSION = 3
 
         // User table
         private const val TABLE_USERS = "users"
@@ -27,6 +27,7 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
         private const val COLUMN_FIN_TYPE = "type" // "income" or "expense"
         private const val COLUMN_FIN_CATEGORY = "category"
         private const val COLUMN_FIN_DATE = "date"
+        private const val COLUMN_FIN_IMAGE = "image_path"
 
         // Savings Goals table
         private const val TABLE_GOALS = "savings_goals"
@@ -61,7 +62,8 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
                 "$COLUMN_FIN_AMOUNT REAL," +
                 "$COLUMN_FIN_TYPE TEXT," +
                 "$COLUMN_FIN_CATEGORY TEXT," +
-                "$COLUMN_FIN_DATE TEXT)")
+                "$COLUMN_FIN_DATE TEXT," +
+                "$COLUMN_FIN_IMAGE TEXT)")
 
         val createGoalsTable = ("CREATE TABLE $TABLE_GOALS (" +
                 "$COLUMN_GOAL_ID INTEGER PRIMARY KEY AUTOINCREMENT," +
@@ -112,7 +114,7 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
     }
 
     // Finance operations
-    fun addTransaction(userId: Int, title: String, amount: Double, type: String, category: String, date: String): Long {
+    fun addTransaction(userId: Int, title: String, amount: Double, type: String, category: String, date: String, imagePath: String? = null): Long {
         val db = this.writableDatabase
         val values = ContentValues()
         values.put(COLUMN_FIN_USER_ID, userId)
@@ -121,7 +123,19 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
         values.put(COLUMN_FIN_TYPE, type)
         values.put(COLUMN_FIN_CATEGORY, category)
         values.put(COLUMN_FIN_DATE, date)
+        values.put(COLUMN_FIN_IMAGE, imagePath)
         return db.insert(TABLE_FINANCE, null, values)
+    }
+
+    fun updateTransaction(id: Int, title: String, amount: Double, type: String, category: String, date: String): Int {
+        val db = this.writableDatabase
+        val values = ContentValues()
+        values.put(COLUMN_FIN_TITLE, title)
+        values.put(COLUMN_FIN_AMOUNT, amount)
+        values.put(COLUMN_FIN_TYPE, type)
+        values.put(COLUMN_FIN_CATEGORY, category)
+        values.put(COLUMN_FIN_DATE, date)
+        return db.update(TABLE_FINANCE, values, "$COLUMN_FIN_ID=?", arrayOf(id.toString()))
     }
 
     fun getAllTransactions(userId: Int): List<Map<String, Any>> {
@@ -137,6 +151,7 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
                 map["type"] = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_FIN_TYPE))
                 map["category"] = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_FIN_CATEGORY))
                 map["date"] = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_FIN_DATE))
+                map["image_path"] = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_FIN_IMAGE)) ?: ""
                 list.add(map)
             } while (cursor.moveToNext())
         }
@@ -156,6 +171,7 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
             map["type"] = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_FIN_TYPE))
             map["category"] = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_FIN_CATEGORY))
             map["date"] = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_FIN_DATE))
+            map["image_path"] = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_FIN_IMAGE)) ?: ""
         }
         cursor.close()
         return map

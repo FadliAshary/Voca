@@ -8,14 +8,15 @@ import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import com.example.voca.database.DatabaseHelper
 import com.example.voca.databinding.ActivityEditGoalBinding
+import com.example.voca.utils.CurrencyUtils
+import com.example.voca.utils.SessionManager
 import java.text.DecimalFormat
-import java.text.NumberFormat
 import java.util.*
 
 class EditGoalActivity : AppCompatActivity() {
     private lateinit var binding: ActivityEditGoalBinding
     private lateinit var db: DatabaseHelper
-    private lateinit var session: com.example.voca.utils.SessionManager
+    private lateinit var session: SessionManager
     private var goalId: Int = -1
     private var originalAmount: Double = 0.0
     private var targetAmount: Double = 0.0
@@ -60,10 +61,10 @@ class EditGoalActivity : AppCompatActivity() {
 
             binding.tvEditGoalNameDisplay.text = name
             
-            val formatter = NumberFormat.getCurrencyInstance(Locale("id", "ID"))
-            binding.tvCurrentAmountDisplay.text = formatter.format(originalAmount).replace("Rp", "Rp ")
-            binding.tvNewTotalPreview.text = formatter.format(originalAmount).replace("Rp", "Rp ")
-            binding.tvGoalProgressSummary.text = "Target: ${formatter.format(targetAmount).replace("Rp", "Rp ")}"
+            val currencyCode = session.getCurrency()
+            binding.tvCurrentAmountDisplay.text = CurrencyUtils.formatCurrency(originalAmount, currencyCode)
+            binding.tvNewTotalPreview.text = CurrencyUtils.formatCurrency(originalAmount, currencyCode)
+            binding.tvGoalProgressSummary.text = "Target: ${CurrencyUtils.formatCurrency(targetAmount, currencyCode)}"
             
             binding.etUpdateCurrentAmount.setText("")
         }
@@ -79,22 +80,24 @@ class EditGoalActivity : AppCompatActivity() {
                     binding.etUpdateCurrentAmount.removeTextChangedListener(this)
 
                     val cleanString = s.toString().replace(".", "")
+                    val currencyCode = session.getCurrency()
                     if (cleanString.isNotEmpty()) {
-                        val parsed = cleanString.toDouble()
-                        val formatted = DecimalFormat("#,###").format(parsed).replace(",", ".")
+                        val parsedInput = cleanString.toDouble()
+                        val formatted = DecimalFormat("#,###").format(parsedInput).replace(",", ".")
                         
                         current = formatted
                         binding.etUpdateCurrentAmount.setText(formatted)
                         binding.etUpdateCurrentAmount.setSelection(formatted.length)
                         
+                        // Konversi input ke IDR untuk perhitungan preview jika bukan IDR
+                        val parsedIDR = CurrencyUtils.convertToIDR(parsedInput, currencyCode)
+                        
                         // Update preview
-                        val newTotal = originalAmount + parsed
-                        val formatter = NumberFormat.getCurrencyInstance(Locale("id", "ID"))
-                        binding.tvNewTotalPreview.text = formatter.format(newTotal).replace("Rp", "Rp ")
+                        val newTotal = originalAmount + parsedIDR
+                        binding.tvNewTotalPreview.text = CurrencyUtils.formatCurrency(newTotal, currencyCode)
                     } else {
                         current = ""
-                        binding.tvNewTotalPreview.text = NumberFormat.getCurrencyInstance(Locale("id", "ID"))
-                            .format(originalAmount).replace("Rp", "Rp ")
+                        binding.tvNewTotalPreview.text = CurrencyUtils.formatCurrency(originalAmount, currencyCode)
                     }
 
                     binding.etUpdateCurrentAmount.addTextChangedListener(this)
@@ -105,11 +108,20 @@ class EditGoalActivity : AppCompatActivity() {
 
     private fun saveUpdate() {
         val addAmountStr = binding.etUpdateCurrentAmount.text.toString().replace(".", "")
-        val addAmount = if (addAmountStr.isNotEmpty()) addAmountStr.toDouble() else 0.0
+        var addAmount = if (addAmountStr.isNotEmpty()) addAmountStr.toDouble() else 0.0
+        
+        val currencyCode = session.getCurrency()
+        val addAmountFormatted = CurrencyUtils.formatCurrency(CurrencyUtils.convertToIDR(addAmount, currencyCode), currencyCode)
+        
+        // Konversi ke IDR sebelum ditambahkan ke total database
+        if (currencyCode != "IDR") {
+            addAmount = CurrencyUtils.convertToIDR(addAmount, currencyCode)
+        }
+        
         val newTotal = originalAmount + addAmount
 
         if (db.updateGoalAmount(goalId, newTotal) > 0) {
-            Toast.makeText(this, "Progress tabungan diperbarui (+${NumberFormat.getCurrencyInstance(Locale("id", "ID")).format(addAmount).replace("Rp", "Rp ")})", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, "Progress tabungan diperbarui (+$addAmountFormatted)", Toast.LENGTH_SHORT).show()
             finish()
         }
     }
