@@ -8,7 +8,7 @@ object AppConfig {
     var MODE = Mode.PRODUCTION
 
     // Server URL untuk production
-    var SERVER_URL = "http://192.168.1.7/voca_api"
+    var SERVER_URL = "http://192.168.1.5/voca_api"
 
     enum class Mode {
         /**
@@ -16,9 +16,6 @@ object AppConfig {
          */
         PRODUCTION,
 
-        /**
-         * Mock: Testing dengan dummy data (tidak perlu XAMPP)
-         */
         MOCK,
 
         /**

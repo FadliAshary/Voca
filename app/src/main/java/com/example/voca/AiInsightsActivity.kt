@@ -22,6 +22,7 @@ class AiInsightsActivity : AppCompatActivity() {
         session = SessionManager(this)
 
         binding.toolbar.setNavigationOnClickListener { finish() }
+        binding.btnBackBottom.setOnClickListener { finish() }
 
         analyzeData()
     }
@@ -35,17 +36,9 @@ class AiInsightsActivity : AppCompatActivity() {
         var totalExpense = 0.0
         val categoryTotals = mutableMapOf<String, Double>()
         
-        // Data mingguan untuk tren
-        val calendar = Calendar.getInstance()
-        val currentMonth = calendar.get(Calendar.MONTH)
-        var currentMonthExpense = 0.0
-
-        val sdf = java.text.SimpleDateFormat("dd MMM yyyy", Locale.getDefault())
-
         for (t in transactions) {
             val amount = (t["amount"] as? Double) ?: 0.0
             val type = t["type"]?.toString() ?: "expense"
-            val dateStr = t["date"]?.toString() ?: ""
             
             if (type == "income") {
                 totalIncome += amount
@@ -53,16 +46,6 @@ class AiInsightsActivity : AppCompatActivity() {
                 totalExpense += amount
                 val cat = t["category"]?.toString() ?: "Lainnya"
                 categoryTotals[cat] = (categoryTotals[cat] ?: 0.0) + amount
-                
-                try {
-                    val date = sdf.parse(dateStr)
-                    if (date != null) {
-                        val cal = Calendar.getInstance().apply { time = date }
-                        if (cal.get(Calendar.MONTH) == currentMonth) {
-                            currentMonthExpense += amount
-                        }
-                    }
-                } catch (e: Exception) {}
             }
         }
 
@@ -121,5 +104,50 @@ class AiInsightsActivity : AppCompatActivity() {
             "Anda belum memiliki target tabungan. Orang dengan target yang jelas cenderung menabung 2x lebih banyak."
         }
         binding.tvAiGoalStatus.text = goalTip
+
+        // 4. Financial Health Score (NEW FEATURE)
+        calculateHealthScore(totalIncome, totalExpense, goals)
+    }
+
+    private fun calculateHealthScore(income: Double, expense: Double, goals: List<Map<String, Any>>) {
+        if (income <= 0) {
+            binding.tvAiHealthScore.text = "--"
+            binding.tvAiHealthDescription.text = "Masukkan data pendapatan untuk melihat skor."
+            return
+        }
+
+        var score = 0
+        
+        // Savings Ratio (40 points)
+        val savingsRate = ((income - expense) / income) * 100
+        score += when {
+            savingsRate >= 30 -> 40
+            savingsRate >= 20 -> 30
+            savingsRate >= 10 -> 20
+            savingsRate > 0 -> 10
+            else -> 0
+        }
+
+        // Expense Control (30 points)
+        val expenseRatio = (expense / income) * 100
+        score += when {
+            expenseRatio <= 50 -> 30
+            expenseRatio <= 70 -> 20
+            expenseRatio <= 90 -> 10
+            else -> 0
+        }
+
+        // Future Planning (30 points)
+        score += if (goals.isNotEmpty()) 30 else 0
+
+        binding.tvAiHealthScore.text = score.toString()
+        
+        val desc = when {
+            score >= 80 -> "Luar Biasa! Keuangan Anda sangat sehat dan terencana."
+            score >= 60 -> "Bagus! Anda berada di jalur yang benar, teruskan menabung."
+            score >= 40 -> "Waspada. Coba kurangi pengeluaran keinginan untuk skor lebih baik."
+            else -> "Kritis. Segera evaluasi pengeluaran Anda dan mulai buat target."
+        }
+        binding.tvAiHealthDescription.text = desc
     }
 }

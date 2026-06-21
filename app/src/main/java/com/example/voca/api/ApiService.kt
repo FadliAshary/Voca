@@ -76,6 +76,7 @@ interface ApiService {
     @FormUrlEncoded
     @POST("add_transaction.php")
     fun addTransaction(
+        @Field("user_id") userId: Int,
         @Field("title") title: String,
         @Field("amount") amount: Double,
         @Field("type") type: String,

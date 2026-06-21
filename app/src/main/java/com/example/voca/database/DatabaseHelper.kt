@@ -9,7 +9,7 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
 
     companion object {
         private const val DATABASE_NAME = "voca_db"
-        private const val DATABASE_VERSION = 3
+        private const val DATABASE_VERSION = 4
 
         // User table
         private const val TABLE_USERS = "users"
@@ -28,6 +28,8 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
         private const val COLUMN_FIN_CATEGORY = "category"
         private const val COLUMN_FIN_DATE = "date"
         private const val COLUMN_FIN_IMAGE = "image_path"
+        private const val COLUMN_FIN_IS_SYNCED = "is_synced" // 0: no, 1: yes
+        private const val COLUMN_FIN_REMOTE_ID = "remote_id"
 
         // Savings Goals table
         private const val TABLE_GOALS = "savings_goals"
@@ -37,6 +39,8 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
         private const val COLUMN_GOAL_TARGET_AMOUNT = "target_amount"
         private const val COLUMN_GOAL_CURRENT_AMOUNT = "current_amount"
         private const val COLUMN_GOAL_DEADLINE = "deadline"
+        private const val COLUMN_GOAL_IS_SYNCED = "is_synced"
+        private const val COLUMN_GOAL_REMOTE_ID = "remote_id"
 
         // Event table (added for XAMPP integration example)
         const val TABLE_EVENTS = "events"
@@ -57,21 +61,25 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
         
         val createFinanceTable = ("CREATE TABLE $TABLE_FINANCE (" +
                 "$COLUMN_FIN_ID INTEGER PRIMARY KEY AUTOINCREMENT," +
-                "$COLUMN_FIN_USER_ID INTEGER," +
+                "$COLUMN_FIN_USER_ID INTEGER NOT NULL," +
                 "$COLUMN_FIN_TITLE TEXT," +
                 "$COLUMN_FIN_AMOUNT REAL," +
                 "$COLUMN_FIN_TYPE TEXT," +
                 "$COLUMN_FIN_CATEGORY TEXT," +
                 "$COLUMN_FIN_DATE TEXT," +
-                "$COLUMN_FIN_IMAGE TEXT)")
+                "$COLUMN_FIN_IMAGE TEXT," +
+                "$COLUMN_FIN_IS_SYNCED INTEGER DEFAULT 0," +
+                "$COLUMN_FIN_REMOTE_ID INTEGER DEFAULT 0)")
 
         val createGoalsTable = ("CREATE TABLE $TABLE_GOALS (" +
                 "$COLUMN_GOAL_ID INTEGER PRIMARY KEY AUTOINCREMENT," +
-                "$COLUMN_GOAL_USER_ID INTEGER," +
+                "$COLUMN_GOAL_USER_ID INTEGER NOT NULL," +
                 "$COLUMN_GOAL_NAME TEXT," +
                 "$COLUMN_GOAL_TARGET_AMOUNT REAL," +
                 "$COLUMN_GOAL_CURRENT_AMOUNT REAL," +
-                "$COLUMN_GOAL_DEADLINE TEXT)")
+                "$COLUMN_GOAL_DEADLINE TEXT," +
+                "$COLUMN_GOAL_IS_SYNCED INTEGER DEFAULT 0," +
+                "$COLUMN_GOAL_REMOTE_ID INTEGER DEFAULT 0)")
 
         val createEventsTable = ("CREATE TABLE $TABLE_EVENTS (" +
                 "$COL_ID INTEGER PRIMARY KEY AUTOINCREMENT," +
@@ -114,7 +122,7 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
     }
 
     // Finance operations
-    fun addTransaction(userId: Int, title: String, amount: Double, type: String, category: String, date: String, imagePath: String? = null): Long {
+    fun addTransaction(userId: Int, title: String, amount: Double, type: String, category: String, date: String, imagePath: String? = null, isSynced: Int = 0, remoteId: Int = 0): Long {
         val db = this.writableDatabase
         val values = ContentValues()
         values.put(COLUMN_FIN_USER_ID, userId)
@@ -124,10 +132,12 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
         values.put(COLUMN_FIN_CATEGORY, category)
         values.put(COLUMN_FIN_DATE, date)
         values.put(COLUMN_FIN_IMAGE, imagePath)
+        values.put(COLUMN_FIN_IS_SYNCED, isSynced)
+        values.put(COLUMN_FIN_REMOTE_ID, remoteId)
         return db.insert(TABLE_FINANCE, null, values)
     }
 
-    fun updateTransaction(id: Int, title: String, amount: Double, type: String, category: String, date: String): Int {
+    fun updateTransaction(id: Int, title: String, amount: Double, type: String, category: String, date: String, isSynced: Int = 0): Int {
         val db = this.writableDatabase
         val values = ContentValues()
         values.put(COLUMN_FIN_TITLE, title)
@@ -135,6 +145,7 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
         values.put(COLUMN_FIN_TYPE, type)
         values.put(COLUMN_FIN_CATEGORY, category)
         values.put(COLUMN_FIN_DATE, date)
+        values.put(COLUMN_FIN_IS_SYNCED, isSynced)
         return db.update(TABLE_FINANCE, values, "$COLUMN_FIN_ID=?", arrayOf(id.toString()))
     }
 
@@ -152,11 +163,43 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
                 map["category"] = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_FIN_CATEGORY))
                 map["date"] = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_FIN_DATE))
                 map["image_path"] = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_FIN_IMAGE)) ?: ""
+                map["is_synced"] = cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_FIN_IS_SYNCED))
+                map["remote_id"] = cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_FIN_REMOTE_ID))
                 list.add(map)
             } while (cursor.moveToNext())
         }
         cursor.close()
         return list
+    }
+
+    fun getUnsyncedTransactions(userId: Int): List<Map<String, Any>> {
+        val list = mutableListOf<Map<String, Any>>()
+        val db = this.readableDatabase
+        val cursor = db.rawQuery("SELECT * FROM $TABLE_FINANCE WHERE $COLUMN_FIN_USER_ID=? AND $COLUMN_FIN_IS_SYNCED=0", arrayOf(userId.toString()))
+        if (cursor.moveToFirst()) {
+            do {
+                val map = mutableMapOf<String, Any>()
+                map["id"] = cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_FIN_ID))
+                map["user_id"] = cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_FIN_USER_ID))
+                map["title"] = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_FIN_TITLE))
+                map["amount"] = cursor.getDouble(cursor.getColumnIndexOrThrow(COLUMN_FIN_AMOUNT))
+                map["type"] = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_FIN_TYPE))
+                map["category"] = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_FIN_CATEGORY))
+                map["date"] = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_FIN_DATE))
+                map["image_path"] = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_FIN_IMAGE)) ?: ""
+                list.add(map)
+            } while (cursor.moveToNext())
+        }
+        cursor.close()
+        return list
+    }
+
+    fun markTransactionSynced(localId: Int, remoteId: Int) {
+        val db = this.writableDatabase
+        val values = ContentValues()
+        values.put(COLUMN_FIN_IS_SYNCED, 1)
+        values.put(COLUMN_FIN_REMOTE_ID, remoteId)
+        db.update(TABLE_FINANCE, values, "$COLUMN_FIN_ID=?", arrayOf(localId.toString()))
     }
 
     fun getTransactionById(id: Int): Map<String, Any>? {
@@ -172,6 +215,8 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
             map["category"] = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_FIN_CATEGORY))
             map["date"] = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_FIN_DATE))
             map["image_path"] = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_FIN_IMAGE)) ?: ""
+            map["is_synced"] = cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_FIN_IS_SYNCED))
+            map["remote_id"] = cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_FIN_REMOTE_ID))
         }
         cursor.close()
         return map
@@ -206,6 +251,8 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
                 map["target_amount"] = cursor.getDouble(cursor.getColumnIndexOrThrow(COLUMN_GOAL_TARGET_AMOUNT))
                 map["current_amount"] = cursor.getDouble(cursor.getColumnIndexOrThrow(COLUMN_GOAL_CURRENT_AMOUNT))
                 map["deadline"] = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_GOAL_DEADLINE))
+                map["is_synced"] = cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_GOAL_IS_SYNCED))
+                map["remote_id"] = cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_GOAL_REMOTE_ID))
                 list.add(map)
             } while (cursor.moveToNext())
         }
