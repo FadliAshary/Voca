@@ -5,4 +5,4 @@
 - Tambahkan fiture baru seperti scan otomatis
 - tambahkan logo apk
 - kembangkan untuk fiture saran prediksi ai
-- 
+- recheck setiap fiture setiap ada update
