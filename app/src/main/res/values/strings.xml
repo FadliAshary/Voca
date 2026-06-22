@@ -9,6 +9,23 @@
     <string name="full_name">Nama Lengkap</string>
     <string name="welcome">Halo, %1$s</string>
     <string name="total_balance">Total Saldo</string>
+    <string name="recent_transactions">Transaksi Terkini</string>
+    <string name="monthly_budget">Anggaran Bulanan</string>
+    <string name="remaining_budget">Sisa Anggaran</string>
+    <string name="category_details">Rincian Kategori</string>
+    <string name="savings_goals">Tabungan Impian</string>
+    <string name="add_goal">+ Tambah</string>
+    <string name="settings">Pengaturan</string>
+    <string name="account">Akun</string>
+    <string name="my_profile">Profil Saya</string>
+    <string name="change_password">Ganti Kata Sandi</string>
+    <string name="preferences">Preferensi</string>
+    <string name="currency">Mata Uang</string>
+    <string name="language">Bahasa</string>
+    <string name="dark_mode">Mode Gelap</string>
+    <string name="notifications">Notifikasi</string>
+    <string name="goal_reminder">Pengingat Tabungan</string>
+    <string name="goal_reminder_desc">Ingatkan saat mendekati jatuh tempo</string>
     <string name="add_transaction">Tambah Transaksi</string>
     <string name="title">Keterangan</string>
     <string name="amount">Jumlah</string>
@@ -18,4 +35,7 @@
     <string name="logout">Logout</string>
     <string name="view_tips">Lihat Tips Keuangan</string>
     <string name="tips_title">Tips Keuangan Voca</string>
+    <string name="input_manual">Input Manual</string>
+    <string name="take_photo">Ambil Foto Struk</string>
+    <string name="pick_gallery">Pilih dari Galeri</string>
 </resources>

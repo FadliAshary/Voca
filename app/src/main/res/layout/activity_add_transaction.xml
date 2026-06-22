@@ -8,14 +8,17 @@
     <com.google.android.material.appbar.AppBarLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@android:color/transparent"
-        app:elevation="0dp">
+        android:background="@color/voca_light_gray"
+        app:elevation="0dp"
+        app:liftOnScroll="false">
 
         <androidx.appcompat.widget.Toolbar
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
-            app:navigationIcon="@drawable/ic_close">
+            android:background="@color/voca_light_gray"
+            app:navigationIcon="@drawable/ic_close"
+            app:navigationIconTint="@color/voca_dark_blue">
 
             <TextView
                 android:layout_width="wrap_content"
@@ -116,10 +119,10 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="32dp"
-                app:cardBackgroundColor="@color/white"
+                app:cardBackgroundColor="@color/voca_card_bg"
                 app:cardCornerRadius="16dp"
                 app:cardElevation="0dp"
-                app:strokeColor="#E2E8F0"
+                app:strokeColor="@color/voca_border"
                 app:strokeWidth="1dp">
 
                 <LinearLayout
@@ -136,137 +139,285 @@
                         android:textSize="16sp"
                         android:textStyle="bold" />
 
-                    <LinearLayout
+                    <!-- Expense Categories Grid -->
+                    <GridLayout
+                        android:id="@+id/gridExpenseCategories"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="16dp"
-                        android:orientation="horizontal">
+                        android:columnCount="4"
+                        android:alignmentMode="alignMargins"
+                        android:columnOrderPreserved="false">
 
-                        <!-- Makanan -->
+                        <!-- Item Makanan -->
                         <LinearLayout
                             android:id="@+id/catFood"
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:gravity="center"
-                            android:orientation="vertical">
+                            style="@style/CategoryItemStyle">
                             <com.google.android.material.card.MaterialCardView
                                 android:id="@+id/cardFood"
-                                android:layout_width="56dp"
-                                android:layout_height="56dp"
-                                app:cardBackgroundColor="#E2F2FF"
-                                app:cardCornerRadius="28dp"
-                                app:cardElevation="0dp">
+                                style="@style/CategoryCardStyle">
                                 <ImageView
-                                    android:layout_width="24dp"
-                                    android:layout_height="24dp"
-                                    android:layout_gravity="center"
-                                    android:src="@drawable/ic_food"
-                                    app:tint="@color/voca_primary_blue" />
+                                    style="@style/CategoryIconStyle"
+                                    android:src="@drawable/ic_food" />
                             </com.google.android.material.card.MaterialCardView>
                             <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_marginTop="8dp"
-                                android:text="Makanan"
-                                android:textColor="@color/voca_text_gray"
-                                android:textSize="11sp" />
+                                style="@style/CategoryTextStyle"
+                                android:text="Makanan" />
                         </LinearLayout>
 
-                        <!-- Transport -->
-                        <LinearLayout
-                            android:id="@+id/catTransport"
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:gravity="center"
-                            android:orientation="vertical">
-                            <com.google.android.material.card.MaterialCardView
-                                android:id="@+id/cardTransport"
-                                android:layout_width="56dp"
-                                android:layout_height="56dp"
-                                app:cardBackgroundColor="#F1F5F9"
-                                app:cardCornerRadius="28dp"
-                                app:cardElevation="0dp">
-                                <ImageView
-                                    android:layout_width="24dp"
-                                    android:layout_height="24dp"
-                                    android:layout_gravity="center"
-                                    android:src="@drawable/ic_transport"
-                                    app:tint="@color/voca_text_gray" />
-                            </com.google.android.material.card.MaterialCardView>
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_marginTop="8dp"
-                                android:text="Transport"
-                                android:textColor="@color/voca_text_gray"
-                                android:textSize="11sp" />
-                        </LinearLayout>
-
-                        <!-- Belanja -->
+                        <!-- Item Belanja -->
                         <LinearLayout
                             android:id="@+id/catShopping"
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:gravity="center"
-                            android:orientation="vertical">
+                            style="@style/CategoryItemStyle">
                             <com.google.android.material.card.MaterialCardView
                                 android:id="@+id/cardShopping"
-                                android:layout_width="56dp"
-                                android:layout_height="56dp"
-                                app:cardBackgroundColor="#F1F5F9"
-                                app:cardCornerRadius="28dp"
-                                app:cardElevation="0dp">
+                                style="@style/CategoryCardStyle">
                                 <ImageView
-                                    android:layout_width="24dp"
-                                    android:layout_height="24dp"
-                                    android:layout_gravity="center"
-                                    android:src="@drawable/ic_shopping"
-                                    app:tint="@color/voca_text_gray" />
+                                    style="@style/CategoryIconStyle"
+                                    android:src="@drawable/ic_shopping" />
                             </com.google.android.material.card.MaterialCardView>
                             <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_marginTop="8dp"
-                                android:text="Belanja"
-                                android:textColor="@color/voca_text_gray"
-                                android:textSize="11sp" />
+                                style="@style/CategoryTextStyle"
+                                android:text="Belanja" />
                         </LinearLayout>
 
-                        <!-- Lainnya -->
+                        <!-- Item Transport -->
+                        <LinearLayout
+                            android:id="@+id/catTransport"
+                            style="@style/CategoryItemStyle">
+                            <com.google.android.material.card.MaterialCardView
+                                android:id="@+id/cardTransport"
+                                style="@style/CategoryCardStyle">
+                                <ImageView
+                                    style="@style/CategoryIconStyle"
+                                    android:src="@drawable/ic_transport" />
+                            </com.google.android.material.card.MaterialCardView>
+                            <TextView
+                                style="@style/CategoryTextStyle"
+                                android:text="Transport" />
+                        </LinearLayout>
+
+                        <!-- Item Tagihan -->
+                        <LinearLayout
+                            android:id="@+id/catBill"
+                            style="@style/CategoryItemStyle">
+                            <com.google.android.material.card.MaterialCardView
+                                android:id="@+id/cardBill"
+                                style="@style/CategoryCardStyle">
+                                <ImageView
+                                    style="@style/CategoryIconStyle"
+                                    android:src="@drawable/ic_bill" />
+                            </com.google.android.material.card.MaterialCardView>
+                            <TextView
+                                style="@style/CategoryTextStyle"
+                                android:text="Tagihan" />
+                        </LinearLayout>
+
+                        <!-- Item Hiburan -->
+                        <LinearLayout
+                            android:id="@+id/catEntertainment"
+                            style="@style/CategoryItemStyle">
+                            <com.google.android.material.card.MaterialCardView
+                                android:id="@+id/cardEntertainment"
+                                style="@style/CategoryCardStyle">
+                                <ImageView
+                                    style="@style/CategoryIconStyle"
+                                    android:src="@drawable/ic_entertainment" />
+                            </com.google.android.material.card.MaterialCardView>
+                            <TextView
+                                style="@style/CategoryTextStyle"
+                                android:text="Hiburan" />
+                        </LinearLayout>
+
+                        <!-- Item Kesehatan -->
+                        <LinearLayout
+                            android:id="@+id/catHealth"
+                            style="@style/CategoryItemStyle">
+                            <com.google.android.material.card.MaterialCardView
+                                android:id="@+id/cardHealth"
+                                style="@style/CategoryCardStyle">
+                                <ImageView
+                                    style="@style/CategoryIconStyle"
+                                    android:src="@drawable/ic_health" />
+                            </com.google.android.material.card.MaterialCardView>
+                            <TextView
+                                style="@style/CategoryTextStyle"
+                                android:text="Kesehatan" />
+                        </LinearLayout>
+
+                        <!-- Item Pendidikan -->
+                        <LinearLayout
+                            android:id="@+id/catEducation"
+                            style="@style/CategoryItemStyle">
+                            <com.google.android.material.card.MaterialCardView
+                                android:id="@+id/cardEducation"
+                                style="@style/CategoryCardStyle">
+                                <ImageView
+                                    style="@style/CategoryIconStyle"
+                                    android:src="@drawable/ic_education" />
+                            </com.google.android.material.card.MaterialCardView>
+                            <TextView
+                                style="@style/CategoryTextStyle"
+                                android:text="Pendidikan" />
+                        </LinearLayout>
+
+                        <!-- Item Rumah -->
+                        <LinearLayout
+                            android:id="@+id/catHome"
+                            style="@style/CategoryItemStyle">
+                            <com.google.android.material.card.MaterialCardView
+                                android:id="@+id/cardHome"
+                                style="@style/CategoryCardStyle">
+                                <ImageView
+                                    style="@style/CategoryIconStyle"
+                                    android:src="@drawable/ic_home_nav" />
+                            </com.google.android.material.card.MaterialCardView>
+                            <TextView
+                                style="@style/CategoryTextStyle"
+                                android:text="Rumah" />
+                        </LinearLayout>
+
+                        <!-- Item Hadiah -->
+                        <LinearLayout
+                            android:id="@+id/catGift"
+                            style="@style/CategoryItemStyle">
+                            <com.google.android.material.card.MaterialCardView
+                                android:id="@+id/cardGift"
+                                style="@style/CategoryCardStyle">
+                                <ImageView
+                                    style="@style/CategoryIconStyle"
+                                    android:src="@drawable/ic_gift" />
+                            </com.google.android.material.card.MaterialCardView>
+                            <TextView
+                                style="@style/CategoryTextStyle"
+                                android:text="Hadiah" />
+                        </LinearLayout>
+
+                        <!-- Item Olahraga -->
+                        <LinearLayout
+                            android:id="@+id/catSport"
+                            style="@style/CategoryItemStyle">
+                            <com.google.android.material.card.MaterialCardView
+                                android:id="@+id/cardSport"
+                                style="@style/CategoryCardStyle">
+                                <ImageView
+                                    style="@style/CategoryIconStyle"
+                                    android:src="@drawable/ic_sport" />
+                            </com.google.android.material.card.MaterialCardView>
+                            <TextView
+                                style="@style/CategoryTextStyle"
+                                android:text="Olahraga" />
+                        </LinearLayout>
+
+                        <!-- Item Travel -->
+                        <LinearLayout
+                            android:id="@+id/catTravel"
+                            style="@style/CategoryItemStyle">
+                            <com.google.android.material.card.MaterialCardView
+                                android:id="@+id/cardTravel"
+                                style="@style/CategoryCardStyle">
+                                <ImageView
+                                    style="@style/CategoryIconStyle"
+                                    android:src="@drawable/ic_travel" />
+                            </com.google.android.material.card.MaterialCardView>
+                            <TextView
+                                style="@style/CategoryTextStyle"
+                                android:text="Travel" />
+                        </LinearLayout>
+
+                        <!-- Item Lainnya -->
                         <LinearLayout
                             android:id="@+id/catMore"
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:gravity="center"
-                            android:orientation="vertical">
+                            style="@style/CategoryItemStyle">
                             <com.google.android.material.card.MaterialCardView
                                 android:id="@+id/cardMore"
-                                android:layout_width="56dp"
-                                android:layout_height="56dp"
-                                app:cardBackgroundColor="#F1F5F9"
-                                app:cardCornerRadius="28dp"
-                                app:cardElevation="0dp">
+                                style="@style/CategoryCardStyle">
                                 <ImageView
-                                    android:layout_width="24dp"
-                                    android:layout_height="24dp"
-                                    android:layout_gravity="center"
-                                    android:src="@drawable/ic_more"
-                                    app:tint="@color/voca_text_gray" />
+                                    style="@style/CategoryIconStyle"
+                                    android:src="@drawable/ic_more" />
                             </com.google.android.material.card.MaterialCardView>
                             <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_marginTop="8dp"
-                                android:text="Lainnya"
-                                android:textColor="@color/voca_text_gray"
-                                android:textSize="11sp" />
+                                style="@style/CategoryTextStyle"
+                                android:text="Lainnya" />
+                        </LinearLayout>
+                    </GridLayout>
+
+                    <!-- Income Categories Grid (Hidden by default) -->
+                    <GridLayout
+                        android:id="@+id/gridIncomeCategories"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="16dp"
+                        android:columnCount="4"
+                        android:visibility="gone"
+                        android:alignmentMode="alignMargins"
+                        android:columnOrderPreserved="false">
+
+                        <!-- Item Gaji -->
+                        <LinearLayout
+                            android:id="@+id/catSalary"
+                            style="@style/CategoryItemStyle">
+                            <com.google.android.material.card.MaterialCardView
+                                android:id="@+id/cardSalary"
+                                style="@style/CategoryCardStyle">
+                                <ImageView
+                                    style="@style/CategoryIconStyle"
+                                    android:src="@drawable/ic_wallet" />
+                            </com.google.android.material.card.MaterialCardView>
+                            <TextView
+                                style="@style/CategoryTextStyle"
+                                android:text="Gaji" />
                         </LinearLayout>
 
-                    </LinearLayout>
+                        <!-- Item Bonus -->
+                        <LinearLayout
+                            android:id="@+id/catBonus"
+                            style="@style/CategoryItemStyle">
+                            <com.google.android.material.card.MaterialCardView
+                                android:id="@+id/cardBonus"
+                                style="@style/CategoryCardStyle">
+                                <ImageView
+                                    style="@style/CategoryIconStyle"
+                                    android:src="@drawable/ic_bonus" />
+                            </com.google.android.material.card.MaterialCardView>
+                            <TextView
+                                style="@style/CategoryTextStyle"
+                                android:text="Bonus" />
+                        </LinearLayout>
+
+                        <!-- Item Investasi -->
+                        <LinearLayout
+                            android:id="@+id/catInvestment"
+                            style="@style/CategoryItemStyle">
+                            <com.google.android.material.card.MaterialCardView
+                                android:id="@+id/cardInvestment"
+                                style="@style/CategoryCardStyle">
+                                <ImageView
+                                    style="@style/CategoryIconStyle"
+                                    android:src="@drawable/ic_budget" />
+                            </com.google.android.material.card.MaterialCardView>
+                            <TextView
+                                style="@style/CategoryTextStyle"
+                                android:text="Investasi" />
+                        </LinearLayout>
+
+                        <!-- Item Lainnya (Income) -->
+                        <LinearLayout
+                            android:id="@+id/catMoreIncome"
+                            style="@style/CategoryItemStyle">
+                            <com.google.android.material.card.MaterialCardView
+                                android:id="@+id/cardMoreIncome"
+                                style="@style/CategoryCardStyle">
+                                <ImageView
+                                    style="@style/CategoryIconStyle"
+                                    android:src="@drawable/ic_more" />
+                            </com.google.android.material.card.MaterialCardView>
+                            <TextView
+                                style="@style/CategoryTextStyle"
+                                android:text="Lainnya" />
+                        </LinearLayout>
+                    </GridLayout>
+
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
@@ -275,10 +426,10 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
-                app:cardBackgroundColor="@color/white"
+                app:cardBackgroundColor="@color/voca_card_bg"
                 app:cardCornerRadius="16dp"
                 app:cardElevation="0dp"
-                app:strokeColor="#E2E8F0"
+                app:strokeColor="@color/voca_border"
                 app:strokeWidth="1dp">
 
                 <LinearLayout
@@ -422,10 +573,10 @@
                 android:clickable="true"
                 android:focusable="true"
                 android:foreground="?attr/selectableItemBackground"
-                app:cardBackgroundColor="@color/white"
+                app:cardBackgroundColor="@color/voca_card_bg"
                 app:cardCornerRadius="16dp"
                 app:cardElevation="0dp"
-                app:strokeColor="#CBD5E1"
+                app:strokeColor="@color/voca_border"
                 app:strokeWidth="1dp">
 
                 <LinearLayout

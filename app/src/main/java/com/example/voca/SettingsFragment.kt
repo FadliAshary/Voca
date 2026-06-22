@@ -45,7 +45,11 @@ class SettingsFragment : Fragment() {
             showLanguageDialog()
         }
 
+        // Initialize switch state without triggering listener
+        binding.switchDarkMode.isChecked = session.isDarkMode()
+        
         binding.switchDarkMode.setOnCheckedChangeListener { _, isChecked ->
+            session.setDarkMode(isChecked)
             if (isChecked) {
                 AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
             } else {
@@ -62,7 +66,11 @@ class SettingsFragment : Fragment() {
     private fun setupUI() {
         binding.tvCurrentCurrency.text = session.getCurrency()
         val lang = session.getLanguage()
-        binding.tvCurrentLanguage.text = if (lang == "in") "Indonesia" else "English"
+        binding.tvCurrentLanguage.text = when (lang) {
+            "id" -> "Indonesia"
+            "in" -> "Indonesia"
+            else -> "English"
+        }
     }
 
     private fun showCurrencyDialog() {
@@ -81,7 +89,7 @@ class SettingsFragment : Fragment() {
 
     private fun showLanguageDialog() {
         val languages = arrayOf("Indonesia", "English")
-        val codes = arrayOf("in", "en")
+        val codes = arrayOf("id", "en") // Changed 'in' to 'id' for better compatibility
         AlertDialog.Builder(requireContext())
             .setTitle("Pilih Bahasa")
             .setItems(languages) { _, which ->
@@ -94,14 +102,9 @@ class SettingsFragment : Fragment() {
     }
 
     private fun setLocale(langCode: String) {
-        val locale = Locale(langCode)
-        Locale.setDefault(locale)
-        val config = resources.configuration
-        config.setLocale(locale)
-        resources.updateConfiguration(config, resources.displayMetrics)
-        
-        // Restart activity to apply language changes
-        activity?.recreate()
+        val appLocale: androidx.core.os.LocaleListCompat = androidx.core.os.LocaleListCompat.forLanguageTags(langCode)
+        AppCompatDelegate.setApplicationLocales(appLocale)
+        // AppCompatDelegate.setApplicationLocales automatically handles activity recreation
     }
 
     override fun onDestroyView() {

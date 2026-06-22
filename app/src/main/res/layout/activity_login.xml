@@ -1,29 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/voca_light_gray"
-    android:fillViewport="true">
+    android:background="@color/white">
 
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <View
+        android:id="@+id/blueHeader"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-
-        <View
-            android:id="@+id/blueHeader"
-            android:layout_width="match_parent"
-            android:layout_height="400dp"
-            android:background="@drawable/login_header_bg"
-            app:layout_constraintTop_toTopOf="parent" />
+        android:layout_height="0dp"
+        android:background="@drawable/login_header_bg"
+        app:layout_constraintHeight_percent="0.55"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <ImageView
         android:id="@+id/ivLogo"
-        android:layout_width="64dp"
-        android:layout_height="64dp"
-        android:layout_marginTop="48dp"
+        android:layout_width="56dp"
+        android:layout_height="56dp"
+        android:layout_marginTop="64dp"
         android:background="@drawable/logo_rounded_bg"
-        android:padding="16dp"
+        android:padding="12dp"
         android:src="@drawable/ic_wallet"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -49,26 +45,25 @@
         android:layout_marginTop="8dp"
         android:text="Kelola aset dengan presisi premium"
         android:textColor="#A0B0C5"
-        android:textSize="14sp"
+        android:textSize="12sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/tvLoginTitle" />
 
+    <!-- Login Fields -->
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/tilEmail"
-        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginHorizontal="32dp"
-        android:layout_marginTop="32dp"
-        android:textColorHint="#6080A0"
-        app:boxBackgroundColor="@color/voca_input_bg"
+        android:layout_marginHorizontal="40dp"
+        android:layout_marginTop="48dp"
+        app:boxBackgroundColor="#1A2D4C"
         app:boxCornerRadiusBottomEnd="16dp"
         app:boxCornerRadiusBottomStart="16dp"
         app:boxCornerRadiusTopEnd="16dp"
         app:boxCornerRadiusTopStart="16dp"
         app:boxStrokeWidth="0dp"
-        app:hintTextColor="@color/white"
+        app:hintEnabled="false"
         app:layout_constraintTop_toBottomOf="@id/tvLoginSubtitle">
 
         <com.google.android.material.textfield.TextInputEditText
@@ -77,27 +72,26 @@
             android:layout_height="wrap_content"
             android:hint="Email"
             android:inputType="textEmailAddress"
-            android:textColor="@color/white" />
+            android:paddingVertical="20dp"
+            android:textColor="@color/white"
+            android:textColorHint="#507090"
+            android:textSize="14sp" />
     </com.google.android.material.textfield.TextInputLayout>
 
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/tilPassword"
-        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginHorizontal="32dp"
+        android:layout_marginHorizontal="40dp"
         android:layout_marginTop="16dp"
-        android:textColorHint="#6080A0"
-        app:boxBackgroundColor="@color/voca_input_bg"
+        app:boxBackgroundColor="#1A2D4C"
         app:boxCornerRadiusBottomEnd="16dp"
         app:boxCornerRadiusBottomStart="16dp"
         app:boxCornerRadiusTopEnd="16dp"
         app:boxCornerRadiusTopStart="16dp"
         app:boxStrokeWidth="0dp"
-        app:hintTextColor="@color/white"
-        app:layout_constraintTop_toBottomOf="@id/tilEmail"
-        app:passwordToggleEnabled="true"
-        app:passwordToggleTint="@color/white">
+        app:hintEnabled="false"
+        app:layout_constraintTop_toBottomOf="@id/tilEmail">
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/etLoginPassword"
@@ -105,53 +99,75 @@
             android:layout_height="wrap_content"
             android:hint="Kata Sandi"
             android:inputType="textPassword"
-            android:textColor="@color/white" />
+            android:paddingVertical="20dp"
+            android:textColor="@color/white"
+            android:textColorHint="#507090"
+            android:textSize="14sp" />
     </com.google.android.material.textfield.TextInputLayout>
 
-    <TextView
-        android:id="@+id/tvForgotPassword"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="12dp"
-        android:layout_marginEnd="32dp"
-        android:text="Lupa Kata Sandi?"
-        android:textColor="@color/white"
-        android:textSize="12sp"
-        android:textStyle="bold"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/tilPassword" />
-
+    <!-- Login Button (Overlapping) -->
     <com.google.android.material.button.MaterialButton
         android:id="@+id/btnLogin"
         android:layout_width="match_parent"
-        android:layout_height="64dp"
-        android:layout_marginHorizontal="32dp"
-        android:layout_marginTop="32dp"
-        android:backgroundTint="@color/voca_dark_blue"
+        android:layout_height="60dp"
+        android:layout_marginHorizontal="40dp"
+        android:backgroundTint="@color/voca_primary_blue"
         android:text="Masuk"
-        android:textColor="@color/white"
         android:textAllCaps="false"
-        android:textSize="16sp"
+        android:textColor="@color/white"
+        android:textStyle="bold"
         app:cornerRadius="16dp"
         app:icon="@drawable/ic_arrow_forward"
         app:iconGravity="textEnd"
-        app:iconTint="@color/white"
-        app:layout_constraintTop_toBottomOf="@id/tvForgotPassword" />
+        app:iconSize="20dp"
+        app:layout_constraintBottom_toBottomOf="@id/blueHeader"
+        app:layout_constraintTop_toBottomOf="@id/blueHeader" />
 
     <TextView
         android:id="@+id/tvRegisterLink"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="32dp"
-        android:layout_marginBottom="32dp"
-        android:paddingBottom="16dp"
         android:text="Belum punya akun? Daftar Sekarang"
         android:textColor="@color/voca_text_gray"
-        android:textSize="14sp"
-        app:layout_constraintBottom_toBottomOf="parent"
+        android:textSize="13sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/btnLogin" />
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
-</ScrollView>
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="40dp"
+        android:gravity="center"
+        android:orientation="horizontal"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:drawablePadding="6dp"
+            android:text="AMAN"
+            android:textColor="#A0B0C5"
+            android:textSize="10sp"
+            app:drawableStartCompat="@drawable/ic_verified"
+            app:drawableTint="#A0B0C5" />
+
+        <View
+            android:layout_width="20dp"
+            android:layout_height="0dp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:drawablePadding="6dp"
+            android:text="TERENKRIPSI"
+            android:textColor="#A0B0C5"
+            android:textSize="10sp"
+            app:drawableStartCompat="@drawable/ic_lock"
+            app:drawableTint="#A0B0C5" />
+    </LinearLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

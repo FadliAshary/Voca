@@ -2,6 +2,11 @@
     <!-- Base application theme. -->
     <style name="Base.Theme.Voca" parent="Theme.Material3.DayNight.NoActionBar">
         <!-- Customize your dark theme here. -->
-        <!-- <item name="colorPrimary">@color/my_dark_primary</item> -->
+        <item name="colorPrimary">@color/voca_primary_blue</item>
+        <item name="colorSecondary">@color/voca_accent_yellow</item>
+        <item name="android:windowBackground">@color/voca_light_gray</item>
+        <item name="colorSurface">@color/voca_card_bg</item>
+        <item name="colorOnSurface">@color/voca_dark_blue</item>
+        <item name="colorOnBackground">@color/voca_dark_blue</item>
     </style>
 </resources>

@@ -43,7 +43,7 @@
                     android:id="@+id/tvTotalBalanceLabel"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Total Saldo"
+                    android:text="@string/total_balance"
                     android:textColor="#A0B0C5"
                     android:textSize="12sp" />
 
@@ -71,7 +71,7 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Pemasukan"
+                            android:text="@string/income"
                             android:textColor="#A0B0C5"
                             android:textSize="10sp" />
                         <TextView
@@ -91,7 +91,7 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Pengeluaran"
+                            android:text="@string/expense"
                             android:textColor="#A0B0C5"
                             android:textSize="10sp" />
                         <TextView
@@ -111,7 +111,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="24dp"
-            android:text="Transaksi Terkini"
+            android:text="@string/recent_transactions"
             android:textColor="@color/voca_dark_blue"
             android:textSize="16sp"
             android:textStyle="bold"

@@ -9,7 +9,7 @@
         android:id="@+id/cardIcon"
         android:layout_width="100dp"
         android:layout_height="100dp"
-        app:cardBackgroundColor="#0A2A50"
+        app:cardBackgroundColor="#1A2D4C"
         app:cardCornerRadius="24dp"
         app:cardElevation="0dp"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -22,11 +22,12 @@
             android:layout_width="48dp"
             android:layout_height="48dp"
             android:layout_gravity="center"
-            android:src="@drawable/ic_wallet" />
+            android:src="@drawable/ic_wallet"
+            app:tint="@color/white" />
 
         <View
             android:layout_width="32dp"
-            android:layout_height="3dp"
+            android:layout_height="2dp"
             android:layout_gravity="bottom|center_horizontal"
             android:layout_marginBottom="16dp"
             android:background="@color/voca_accent_yellow" />
@@ -37,10 +38,11 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="24dp"
-        android:text="Voca"
+        android:text="VOCA"
         android:textColor="@color/white"
-        android:textSize="32sp"
+        android:textSize="28sp"
         android:textStyle="bold"
+        android:letterSpacing="0.1"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/cardIcon" />
@@ -50,21 +52,22 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
-        android:letterSpacing="0.1"
         android:text="PREMIUM FINANCIAL INTELLIGENCE"
         android:textColor="#A0B0C5"
-        android:textSize="12sp"
+        android:textSize="10sp"
+        android:letterSpacing="0.1"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/tvBrandName" />
 
     <ProgressBar
         android:id="@+id/progressBar"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
-        android:layout_marginTop="48dp"
+        style="@style/Widget.AppCompat.ProgressBar.Horizontal"
+        android:layout_width="200dp"
+        android:layout_height="4dp"
+        android:layout_marginTop="64dp"
         android:indeterminate="true"
-        android:indeterminateTint="@color/voca_accent_yellow"
+        android:progressDrawable="@drawable/custom_progress_bar"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/tvSubtitle" />
@@ -76,7 +79,7 @@
         android:layout_marginTop="16dp"
         android:text="Initializing secure session..."
         android:textColor="#507090"
-        android:textSize="12sp"
+        android:textSize="11sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/progressBar" />
@@ -84,7 +87,7 @@
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="32dp"
+        android:layout_marginBottom="48dp"
         android:gravity="center"
         android:orientation="horizontal"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -92,34 +95,19 @@
         app:layout_constraintStart_toStartOf="parent">
 
         <ImageView
-            android:layout_width="16dp"
-            android:layout_height="16dp"
+            android:layout_width="14dp"
+            android:layout_height="14dp"
             android:layout_marginEnd="8dp"
-            android:alpha="0.5"
-            android:src="@drawable/ic_lock" />
+            android:alpha="0.6"
+            android:src="@drawable/ic_lock"
+            app:tint="@color/voca_text_gray" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="End-to-End Encryption Enabled"
             android:textColor="#507090"
-            android:textSize="12sp" />
+            android:textSize="10sp" />
     </LinearLayout>
-
-    <!-- Hidden buttons for navigation in this redesign demo -->
-    <Button
-        android:id="@+id/btnLandingLogin"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:visibility="invisible"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-    <Button
-        android:id="@+id/btnLandingRegister"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:visibility="invisible"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

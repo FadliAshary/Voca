@@ -125,8 +125,29 @@ class SessionManager(context: Context) {
         editor.apply()
     }
 
+    fun setDarkMode(isDark: Boolean) {
+        editor.putBoolean("darkMode", isDark)
+        editor.apply()
+    }
+
+    fun isDarkMode(): Boolean {
+        return sharedPreferences.getBoolean("darkMode", false)
+    }
+
     fun logout() {
+        val email = getUserEmail()
+        val dark = isDarkMode()
+        val lang = getLanguage()
+        val curr = getCurrency()
+        
         editor.clear()
+        
+        // Tetap simpan preferensi dasar
+        if (email != null) editor.putString("userEmail", email)
+        editor.putBoolean("darkMode", dark)
+        editor.putString("language", lang)
+        editor.putString("currency", curr)
+
         editor.apply()
     }
 }

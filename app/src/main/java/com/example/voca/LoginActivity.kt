@@ -16,6 +16,10 @@ class LoginActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        
+        // Force light mode for login
+        delegate.localNightMode = androidx.appcompat.app.AppCompatDelegate.MODE_NIGHT_NO
+
         binding = ActivityLoginBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
@@ -35,6 +39,26 @@ class LoginActivity : AppCompatActivity() {
         binding.tvRegisterLink.setOnClickListener {
             startActivity(Intent(this, RegisterActivity::class.java))
         }
+
+        val text = "Belum punya akun? Daftar Sekarang"
+        val spannable = android.text.SpannableString(text)
+        val blueColor = android.graphics.Color.parseColor("#003285")
+        val start = text.indexOf("Daftar Sekarang")
+        if (start != -1) {
+            spannable.setSpan(
+                android.text.style.ForegroundColorSpan(blueColor),
+                start,
+                start + "Daftar Sekarang".length,
+                android.text.Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
+            )
+            spannable.setSpan(
+                android.text.style.StyleSpan(android.graphics.Typeface.BOLD),
+                start,
+                start + "Daftar Sekarang".length,
+                android.text.Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
+            )
+        }
+        binding.tvRegisterLink.text = spannable
     }
 
     private fun loginUser(email: String, password: String) {
@@ -57,6 +81,11 @@ class LoginActivity : AppCompatActivity() {
 
                             session.setUserName(body["name"]?.toString() ?: email)
                             session.setUserEmail(email)
+
+                            // Save user to local DB for Change Password feature
+                            val db = com.example.voca.database.DatabaseHelper(this@LoginActivity)
+                            db.saveOrUpdateUser(body["name"]?.toString() ?: "User", email, password)
+
                             Toast.makeText(this@LoginActivity, "Login Berhasil", Toast.LENGTH_SHORT).show()
                             startActivity(Intent(this@LoginActivity, HomeActivity::class.java))
                             finishAffinity()

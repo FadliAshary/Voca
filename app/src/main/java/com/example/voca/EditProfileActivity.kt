@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatDelegate
 import com.example.voca.databinding.ActivityEditProfileBinding
 import com.example.voca.utils.SessionManager
 
@@ -43,6 +44,20 @@ class EditProfileActivity : AppCompatActivity() {
 
         binding.btnSaveProfile.setOnClickListener {
             saveProfile()
+        }
+
+        binding.btnNavChangePassword.setOnClickListener {
+            startActivity(Intent(this, ChangePasswordActivity::class.java))
+        }
+
+        binding.switchDarkMode.isChecked = session.isDarkMode()
+        binding.switchDarkMode.setOnCheckedChangeListener { _, isChecked ->
+            session.setDarkMode(isChecked)
+            if (isChecked) {
+                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
+            } else {
+                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
+            }
         }
 
         binding.btnChangePhoto.setOnClickListener {

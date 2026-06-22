@@ -37,13 +37,7 @@ class ChangePasswordActivity : AppCompatActivity() {
             if (newPass == confirmPass) {
                 // First check if old password is correct
                 if (db.checkUser(email, oldPass)) {
-                    val res = db.updatePassword(email, newPass)
-                    if (res > 0) {
-                        Toast.makeText(this, "Kata sandi berhasil diperbarui", Toast.LENGTH_SHORT).show()
-                        finish()
-                    } else {
-                        Toast.makeText(this, "Gagal memperbarui kata sandi", Toast.LENGTH_SHORT).show()
-                    }
+                    updatePasswordOnServer(email, newPass)
                 } else {
                     Toast.makeText(this, "Kata sandi lama salah", Toast.LENGTH_SHORT).show()
                 }
@@ -53,5 +47,26 @@ class ChangePasswordActivity : AppCompatActivity() {
         } else {
             Toast.makeText(this, "Mohon isi semua field", Toast.LENGTH_SHORT).show()
         }
+    }
+
+    private fun updatePasswordOnServer(email: String, newPass: String) {
+        val apiService = com.example.voca.api.ApiService.create()
+        apiService.updatePassword(email, newPass).enqueue(object : retrofit2.Callback<Map<String, Any>> {
+            override fun onResponse(call: retrofit2.Call<Map<String, Any>>, response: retrofit2.Response<Map<String, Any>>) {
+                if (response.isSuccessful && response.body()?.get("success") == true) {
+                    // Update local DB too
+                    db.updatePassword(email, newPass)
+                    Toast.makeText(this@ChangePasswordActivity, "Kata sandi berhasil diperbarui", Toast.LENGTH_SHORT).show()
+                    finish()
+                } else {
+                    val msg = response.body()?.get("message")?.toString() ?: "Gagal memperbarui kata sandi di server"
+                    Toast.makeText(this@ChangePasswordActivity, msg, Toast.LENGTH_SHORT).show()
+                }
+            }
+
+            override fun onFailure(call: retrofit2.Call<Map<String, Any>>, t: Throwable) {
+                Toast.makeText(this@ChangePasswordActivity, "Koneksi gagal: ${t.message}", Toast.LENGTH_SHORT).show()
+            }
+        })
     }
 }

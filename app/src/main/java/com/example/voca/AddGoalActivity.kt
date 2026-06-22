@@ -45,6 +45,7 @@ class AddGoalActivity : AppCompatActivity() {
         val targetStr = binding.etTargetAmount.text.toString()
         val initialStr = binding.etInitialAmount.text.toString()
         val deadline = binding.tvGoalDeadline.text.toString()
+        val note = binding.etGoalNote.text.toString()
 
         if (name.isNotEmpty() && targetStr.isNotEmpty()) {
             var target = targetStr.toDoubleOrNull() ?: 0.0
@@ -58,7 +59,7 @@ class AddGoalActivity : AppCompatActivity() {
                 initial = CurrencyUtils.convertToIDR(initial, currentCurrency)
             }
             
-            val res = db.addGoal(userId, name, target, initial, deadline)
+            val res = db.addGoal(userId, name, target, initial, deadline, note)
             if (res > 0) {
                 Toast.makeText(this, "Target Tabungan Berhasil Dibuat", Toast.LENGTH_SHORT).show()
                 finish()

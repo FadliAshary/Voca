@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatDelegate
 import com.example.voca.api.ApiService
 import com.example.voca.databinding.ActivityRegisterBinding
 import retrofit2.Call
@@ -15,6 +16,10 @@ class RegisterActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        
+        // Force light mode for registration
+        delegate.localNightMode = AppCompatDelegate.MODE_NIGHT_NO
+
         binding = ActivityRegisterBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
@@ -58,6 +63,10 @@ class RegisterActivity : AppCompatActivity() {
                     if (response.isSuccessful) {
                         val body = response.body()
                         if (body != null && body["success"] == true) {
+                            // Cadangkan ke DB lokal untuk fitur Ganti Kata Sandi
+                            val dbHelper = com.example.voca.database.DatabaseHelper(this@RegisterActivity)
+                            dbHelper.saveOrUpdateUser(name, email, password)
+
                             Toast.makeText(this@RegisterActivity, "Registrasi Berhasil", Toast.LENGTH_SHORT).show()
                             finish()
                         } else {

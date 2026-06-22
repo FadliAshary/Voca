@@ -74,7 +74,7 @@ class HomeFragment : Fragment() {
                 text = "Belum ada transaksi"
                 gravity = android.view.Gravity.CENTER
                 setPadding(0, 40, 0, 40)
-                setTextColor(android.graphics.Color.WHITE)
+                setTextColor(androidx.core.content.ContextCompat.getColor(requireContext(), R.color.white))
             }
             container.addView(emptyText)
             return

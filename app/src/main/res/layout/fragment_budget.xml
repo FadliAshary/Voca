@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#F8FAFC"
+    android:background="?android:attr/windowBackground"
     android:fillViewport="true"
     android:clipToPadding="false"
     android:paddingBottom="100dp">
@@ -17,7 +17,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Anggaran Bulanan"
+            android:text="@string/monthly_budget"
             android:textColor="@color/voca_dark_blue"
             android:textSize="22sp"
             android:textStyle="bold" />
@@ -35,10 +35,10 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="24dp"
-            app:cardBackgroundColor="@color/white"
+            app:cardBackgroundColor="@color/voca_card_bg"
             app:cardCornerRadius="20dp"
             app:cardElevation="0dp"
-            app:strokeColor="#E2E8F0"
+            app:strokeColor="@color/voca_border"
             app:strokeWidth="1dp">
 
             <LinearLayout
@@ -51,7 +51,7 @@
                     android:id="@+id/tvBudgetTitle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Sisa Anggaran"
+                    android:text="@string/remaining_budget"
                     android:textColor="@color/voca_text_gray"
                     android:textSize="12sp" />
 
@@ -90,7 +90,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="24dp"
-            android:text="Rincian Kategori"
+            android:text="@string/category_details"
             android:textColor="@color/voca_dark_blue"
             android:textSize="16sp"
             android:textStyle="bold" />
@@ -99,7 +99,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="12dp"
-            app:cardBackgroundColor="@color/white"
+            app:cardBackgroundColor="@color/voca_card_bg"
             app:cardCornerRadius="16dp"
             app:cardElevation="0dp">
 
@@ -124,7 +124,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Tabungan Impian"
+                android:text="@string/savings_goals"
                 android:textColor="@color/voca_dark_blue"
                 android:textSize="16sp"
                 android:textStyle="bold" />
@@ -133,7 +133,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentEnd="true"
-                android:text="+ Tambah"
+                android:text="@string/add_goal"
                 android:textColor="@color/voca_primary_blue"
                 android:textStyle="bold" />
         </RelativeLayout>

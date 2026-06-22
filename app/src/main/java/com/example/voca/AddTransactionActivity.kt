@@ -9,12 +9,14 @@ import android.graphics.Color
 import android.os.Bundle
 import android.provider.MediaStore
 import android.view.View
+import android.view.WindowInsetsController
 import android.widget.ImageView
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
+import androidx.core.widget.addTextChangedListener
 import com.example.voca.api.ApiService
 import com.example.voca.database.DatabaseHelper
 import com.example.voca.databinding.ActivityAddTransactionBinding
@@ -25,6 +27,7 @@ import retrofit2.Callback
 import retrofit2.Response
 import java.io.File
 import java.io.FileOutputStream
+import java.text.NumberFormat
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -37,6 +40,8 @@ class AddTransactionActivity : AppCompatActivity() {
     private var selectedAccount = "Tabungan Utama"
     private var currentImagePath: String? = null
     private val scanner = ReceiptScanner()
+
+    private var currentAmountText = ""
 
     private val cameraLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
         if (result.resultCode == RESULT_OK) {
@@ -60,6 +65,18 @@ class AddTransactionActivity : AppCompatActivity() {
         binding = ActivityAddTransactionBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        // Make status bar light
+        window.statusBarColor = ContextCompat.getColor(this, R.color.voca_light_gray)
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.R) {
+            window.insetsController?.setSystemBarsAppearance(
+                WindowInsetsController.APPEARANCE_LIGHT_STATUS_BARS,
+                WindowInsetsController.APPEARANCE_LIGHT_STATUS_BARS
+            )
+        } else {
+            @Suppress("DEPRECATION")
+            window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
+        }
+
         db = DatabaseHelper(this)
         session = com.example.voca.utils.SessionManager(this)
 
@@ -68,6 +85,7 @@ class AddTransactionActivity : AppCompatActivity() {
         setupDatePicker()
         setupAccountPicker()
         setupUploadReceipt()
+        setupAmountFormatting()
         
         updateDateDisplay()
         handleIntentExtras()
@@ -75,6 +93,40 @@ class AddTransactionActivity : AppCompatActivity() {
         binding.btnSave.setOnClickListener {
             saveTransaction()
         }
+    }
+
+    private fun setupAmountFormatting() {
+        binding.etAmount.addTextChangedListener { s ->
+            if (s.toString() != currentAmountText) {
+                binding.etAmount.removeTextChangedListener(null) // Not working like this in Kotlin extension
+            }
+        }
+        
+        // Manual implementation for better control
+        binding.etAmount.addTextChangedListener(object : android.text.TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+            override fun afterTextChanged(s: android.text.Editable?) {
+                if (s.toString() != currentAmountText) {
+                    binding.etAmount.removeTextChangedListener(this)
+
+                    val cleanString = s.toString().replace(".", "")
+                    if (cleanString.isNotEmpty()) {
+                        val parsed = cleanString.toDoubleOrNull() ?: 0.0
+                        val formatted = NumberFormat.getInstance(Locale("in", "ID")).format(parsed)
+
+                        currentAmountText = formatted
+                        binding.etAmount.setText(formatted)
+                        binding.etAmount.setSelection(formatted.length)
+                    } else {
+                        currentAmountText = ""
+                        binding.etAmount.setText("")
+                    }
+
+                    binding.etAmount.addTextChangedListener(this)
+                }
+            }
+        })
     }
 
     private fun handleIntentExtras() {
@@ -216,10 +268,38 @@ class AddTransactionActivity : AppCompatActivity() {
     }
 
     private fun setupCategorySelection() {
+        // Expense Categories
         binding.catFood.setOnClickListener { selectCategory("Makanan") }
         binding.catTransport.setOnClickListener { selectCategory("Transport") }
         binding.catShopping.setOnClickListener { selectCategory("Belanja") }
+        binding.catBill.setOnClickListener { selectCategory("Tagihan") }
+        binding.catEntertainment.setOnClickListener { selectCategory("Hiburan") }
+        binding.catHealth.setOnClickListener { selectCategory("Kesehatan") }
+        binding.catEducation.setOnClickListener { selectCategory("Pendidikan") }
+        binding.catHome.setOnClickListener { selectCategory("Rumah") }
+        binding.catGift.setOnClickListener { selectCategory("Hadiah") }
+        binding.catSport.setOnClickListener { selectCategory("Olahraga") }
+        binding.catTravel.setOnClickListener { selectCategory("Travel") }
         binding.catMore.setOnClickListener { selectCategory("Lainnya") }
+
+        // Income Categories
+        binding.catSalary.setOnClickListener { selectCategory("Gaji") }
+        binding.catBonus.setOnClickListener { selectCategory("Bonus") }
+        binding.catInvestment.setOnClickListener { selectCategory("Investasi") }
+        binding.catMoreIncome.setOnClickListener { selectCategory("Lainnya") }
+
+        // Type Toggle
+        binding.rgType.setOnCheckedChangeListener { _, checkedId ->
+            if (checkedId == R.id.rbIncome) {
+                binding.gridExpenseCategories.visibility = View.GONE
+                binding.gridIncomeCategories.visibility = View.VISIBLE
+                selectCategory("Gaji")
+            } else {
+                binding.gridExpenseCategories.visibility = View.VISIBLE
+                binding.gridIncomeCategories.visibility = View.GONE
+                selectCategory("Makanan")
+            }
+        }
         
         // Initial selection
         selectCategory("Makanan")
@@ -228,29 +308,50 @@ class AddTransactionActivity : AppCompatActivity() {
     private fun selectCategory(name: String) {
         selectedCategory = name
         
-        val categoryViews = mapOf(
-            "Makanan" to Triple(binding.cardFood, binding.cardFood.getChildAt(0) as ImageView, "#E2F2FF"),
-            "Transport" to Triple(binding.cardTransport, binding.cardTransport.getChildAt(0) as ImageView, "#F1F5F9"),
-            "Belanja" to Triple(binding.cardShopping, binding.cardShopping.getChildAt(0) as ImageView, "#F1F5F9"),
-            "Lainnya" to Triple(binding.cardMore, binding.cardMore.getChildAt(0) as ImageView, "#F1F5F9")
+        // Handle "Lainnya" based on current type
+        val isIncome = binding.rbIncome.isChecked
+        val cardMoreToUse = if (isIncome) binding.cardMoreIncome else binding.cardMore
+        
+        // Reset ALL cards first
+        val allCards = listOf(
+            binding.cardFood, binding.cardTransport, binding.cardShopping, binding.cardBill,
+            binding.cardEntertainment, binding.cardHealth, binding.cardEducation, binding.cardHome,
+            binding.cardGift, binding.cardSport, binding.cardTravel, binding.cardMore,
+            binding.cardSalary, binding.cardBonus, binding.cardInvestment, binding.cardMoreIncome
         )
 
-        categoryViews.forEach { (catName, views) ->
-            val card = views.first
-            val icon = views.second
-            
-            if (catName == selectedCategory) {
-                card.setCardBackgroundColor(ContextCompat.getColor(this, R.color.voca_primary_blue))
-                icon.imageTintList = ColorStateList.valueOf(Color.WHITE)
-            } else {
-                card.setCardBackgroundColor(Color.parseColor(views.third))
-                icon.imageTintList = ColorStateList.valueOf(Color.parseColor("#718096"))
-            }
+        allCards.forEach { card ->
+            val icon = card.getChildAt(0) as ImageView
+            card.setCardBackgroundColor(Color.parseColor("#F1F5F9"))
+            icon.imageTintList = ColorStateList.valueOf(Color.parseColor("#718096"))
         }
+
+        // Highlight selected
+        val selectedCard = when(name) {
+            "Makanan" -> binding.cardFood
+            "Transport" -> binding.cardTransport
+            "Belanja" -> binding.cardShopping
+            "Tagihan" -> binding.cardBill
+            "Hiburan" -> binding.cardEntertainment
+            "Kesehatan" -> binding.cardHealth
+            "Pendidikan" -> binding.cardEducation
+            "Rumah" -> binding.cardHome
+            "Hadiah" -> binding.cardGift
+            "Olahraga" -> binding.cardSport
+            "Travel" -> binding.cardTravel
+            "Gaji" -> binding.cardSalary
+            "Bonus" -> binding.cardBonus
+            "Investasi" -> binding.cardInvestment
+            "Lainnya" -> cardMoreToUse
+            else -> binding.cardMore
+        }
+
+        selectedCard.setCardBackgroundColor(ContextCompat.getColor(this, R.color.voca_primary_blue))
+        (selectedCard.getChildAt(0) as ImageView).imageTintList = ColorStateList.valueOf(Color.WHITE)
     }
 
     private fun saveTransaction() {
-        val amountStr = binding.etAmount.text.toString()
+        val amountStr = binding.etAmount.text.toString().replace(".", "")
         val title = binding.etTitle.text.toString().ifEmpty { selectedCategory }
         val type = if (binding.rbIncome.isChecked) "income" else "expense"
         

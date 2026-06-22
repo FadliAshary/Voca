@@ -84,6 +84,13 @@ interface ApiService {
         @Field("date") date: String
     ): Call<Map<String, Any>>
 
+    @FormUrlEncoded
+    @POST("update_password.php")
+    fun updatePassword(
+        @Field("email") email: String,
+        @Field("new_password") newPass: String
+    ): Call<Map<String, Any>>
+
     companion object {
         fun create(): ApiService = RetrofitClient.apiService
         fun getInstance(): ApiService = RetrofitClient.apiService

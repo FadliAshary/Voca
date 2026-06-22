@@ -14,6 +14,7 @@ import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import com.example.voca.databinding.ActivityHomeBinding
 import com.example.voca.utils.ReceiptScanner
+import com.example.voca.utils.SyncManager
 import java.io.File
 import java.io.FileOutputStream
 
@@ -51,6 +52,9 @@ class HomeActivity : AppCompatActivity() {
         binding = ActivityHomeBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        // Sync unsynced data
+        SyncManager(this).syncTransactions()
+
         // Set default fragment
         if (savedInstanceState == null) {
             loadFragment(HomeFragment())
@@ -66,25 +70,42 @@ class HomeActivity : AppCompatActivity() {
                 R.id.nav_budget -> BudgetFragment()
                 R.id.nav_profile -> ProfileFragment()
                 R.id.nav_settings -> SettingsFragment()
-                else -> HomeFragment()
+                else -> return@setOnItemSelectedListener false
             }
             loadFragment(fragment)
             true
         }
     }
 
+    override fun onResume() {
+        super.onResume()
+        SyncManager(this).syncTransactions()
+    }
+
     private fun showAddOptions() {
-        val options = arrayOf("Input Manual", "Ambil Foto Struk", "Pilih dari Galeri")
-        AlertDialog.Builder(this)
-            .setTitle("Tambah Transaksi")
-            .setItems(options) { _, which ->
-                when (which) {
-                    0 -> startActivity(Intent(this, AddTransactionActivity::class.java))
-                    1 -> openCamera()
-                    2 -> openGallery()
-                }
-            }
-            .show()
+        val dialogView = layoutInflater.inflate(R.layout.dialog_add_transaction, null)
+        val dialog = AlertDialog.Builder(this)
+            .setView(dialogView)
+            .create()
+
+        dialog.window?.setBackgroundDrawableResource(android.R.color.transparent)
+
+        dialogView.findViewById<android.view.View>(R.id.btnInputManual).setOnClickListener {
+            startActivity(Intent(this, AddTransactionActivity::class.java))
+            dialog.dismiss()
+        }
+
+        dialogView.findViewById<android.view.View>(R.id.btnCamera).setOnClickListener {
+            openCamera()
+            dialog.dismiss()
+        }
+
+        dialogView.findViewById<android.view.View>(R.id.btnGallery).setOnClickListener {
+            openGallery()
+            dialog.dismiss()
+        }
+
+        dialog.show()
     }
 
     private fun openCamera() {

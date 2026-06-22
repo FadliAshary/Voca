@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#F8FAFC"
+    android:background="@color/voca_light_gray"
     android:fillViewport="true"
     android:clipToPadding="false"
     android:paddingBottom="120dp">
@@ -73,7 +73,7 @@
             app:cardBackgroundColor="@color/white"
             app:cardCornerRadius="20dp"
             app:cardElevation="0dp"
-            app:strokeColor="#E2E8F0"
+            app:strokeColor="@color/voca_border"
             app:strokeWidth="1dp">
             <LinearLayout
                 android:layout_width="match_parent"
@@ -116,7 +116,7 @@
             app:cardBackgroundColor="@color/white"
             app:cardCornerRadius="20dp"
             app:cardElevation="0dp"
-            app:strokeColor="#E2E8F0"
+            app:strokeColor="@color/voca_border"
             app:strokeWidth="1dp">
             <LinearLayout
                 android:layout_width="match_parent"
@@ -186,7 +186,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="24dp"
-            app:cardBackgroundColor="#F1F5F9"
+            app:cardBackgroundColor="@color/voca_input_bg"
             app:cardCornerRadius="16dp"
             app:cardElevation="0dp">
             <LinearLayout
@@ -240,55 +240,7 @@
                         app:tint="@color/voca_text_gray" />
                 </LinearLayout>
 
-                <View android:layout_width="match_parent" android:layout_height="1dp" android:background="#F1F5F9" />
-
-                <LinearLayout
-                    android:id="@+id/btnSecurity"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:background="@color/white"
-                    android:gravity="center_vertical"
-                    android:padding="16dp">
-                    <com.google.android.material.card.MaterialCardView
-                        android:layout_width="40dp"
-                        android:layout_height="40dp"
-                        app:cardBackgroundColor="#F1F5F9"
-                        app:cardCornerRadius="20dp"
-                        app:cardElevation="0dp">
-                        <ImageView
-                            android:layout_width="20dp"
-                            android:layout_height="20dp"
-                            android:layout_gravity="center"
-                            android:src="@drawable/ic_security"
-                            app:tint="@color/voca_primary_blue" />
-                    </com.google.android.material.card.MaterialCardView>
-                    <LinearLayout
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="12dp"
-                        android:layout_weight="1"
-                        android:orientation="vertical">
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="Keamanan"
-                            android:textColor="@color/voca_dark_blue"
-                            android:textStyle="bold" />
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="2FA, Biometrik, dan Kata Sandi"
-                            android:textColor="@color/voca_text_gray"
-                            android:textSize="10sp" />
-                    </LinearLayout>
-                    <ImageView
-                        android:layout_width="20dp"
-                        android:layout_height="20dp"
-                        android:src="@drawable/ic_arrow_forward"
-                        app:tint="@color/voca_text_gray" />
-                </LinearLayout>
-
-                <View android:layout_width="match_parent" android:layout_height="1dp" android:background="#F1F5F9" />
+                <View android:layout_width="match_parent" android:layout_height="1dp" android:background="@color/voca_input_bg" />
 
                 <LinearLayout
                     android:id="@+id/btnSetTarget"
@@ -336,7 +288,7 @@
                         app:tint="@color/voca_text_gray" />
                 </LinearLayout>
 
-                <View android:layout_width="match_parent" android:layout_height="1dp" android:background="#F1F5F9" />
+                <View android:layout_width="match_parent" android:layout_height="1dp" android:background="@color/voca_input_bg" />
 
                 <LinearLayout
                     android:id="@+id/btnAiInsight"

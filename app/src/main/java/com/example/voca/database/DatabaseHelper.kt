@@ -9,7 +9,7 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
 
     companion object {
         private const val DATABASE_NAME = "voca_db"
-        private const val DATABASE_VERSION = 4
+        private const val DATABASE_VERSION = 5
 
         // User table
         private const val TABLE_USERS = "users"
@@ -39,6 +39,7 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
         private const val COLUMN_GOAL_TARGET_AMOUNT = "target_amount"
         private const val COLUMN_GOAL_CURRENT_AMOUNT = "current_amount"
         private const val COLUMN_GOAL_DEADLINE = "deadline"
+        private const val COLUMN_GOAL_NOTE = "note"
         private const val COLUMN_GOAL_IS_SYNCED = "is_synced"
         private const val COLUMN_GOAL_REMOTE_ID = "remote_id"
 
@@ -78,6 +79,7 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
                 "$COLUMN_GOAL_TARGET_AMOUNT REAL," +
                 "$COLUMN_GOAL_CURRENT_AMOUNT REAL," +
                 "$COLUMN_GOAL_DEADLINE TEXT," +
+                "$COLUMN_GOAL_NOTE TEXT," +
                 "$COLUMN_GOAL_IS_SYNCED INTEGER DEFAULT 0," +
                 "$COLUMN_GOAL_REMOTE_ID INTEGER DEFAULT 0)")
 
@@ -228,7 +230,7 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
     }
 
     // Savings Goals operations
-    fun addGoal(userId: Int, name: String, targetAmount: Double, currentAmount: Double, deadline: String): Long {
+    fun addGoal(userId: Int, name: String, targetAmount: Double, currentAmount: Double, deadline: String, note: String = ""): Long {
         val db = this.writableDatabase
         val values = ContentValues()
         values.put(COLUMN_GOAL_USER_ID, userId)
@@ -236,6 +238,7 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
         values.put(COLUMN_GOAL_TARGET_AMOUNT, targetAmount)
         values.put(COLUMN_GOAL_CURRENT_AMOUNT, currentAmount)
         values.put(COLUMN_GOAL_DEADLINE, deadline)
+        values.put(COLUMN_GOAL_NOTE, note)
         return db.insert(TABLE_GOALS, null, values)
     }
 
@@ -251,6 +254,7 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
                 map["target_amount"] = cursor.getDouble(cursor.getColumnIndexOrThrow(COLUMN_GOAL_TARGET_AMOUNT))
                 map["current_amount"] = cursor.getDouble(cursor.getColumnIndexOrThrow(COLUMN_GOAL_CURRENT_AMOUNT))
                 map["deadline"] = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_GOAL_DEADLINE))
+                map["note"] = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_GOAL_NOTE)) ?: ""
                 map["is_synced"] = cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_GOAL_IS_SYNCED))
                 map["remote_id"] = cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_GOAL_REMOTE_ID))
                 list.add(map)
@@ -277,5 +281,18 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
         val values = ContentValues()
         values.put(COLUMN_USER_PASSWORD, newPass)
         return db.update(TABLE_USERS, values, "$COLUMN_USER_EMAIL=?", arrayOf(email))
+    }
+
+    fun saveOrUpdateUser(name: String, email: String, pass: String) {
+        val db = this.writableDatabase
+        val values = ContentValues()
+        values.put(COLUMN_USER_NAME, name)
+        values.put(COLUMN_USER_PASSWORD, pass)
+        
+        val rows = db.update(TABLE_USERS, values, "$COLUMN_USER_EMAIL=?", arrayOf(email))
+        if (rows == 0) {
+            values.put(COLUMN_USER_EMAIL, email)
+            db.insert(TABLE_USERS, null, values)
+        }
     }
 }

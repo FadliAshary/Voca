@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#F8FAFC"
+    android:background="?android:attr/windowBackground"
     android:clipToPadding="false"
     android:paddingBottom="100dp">
 
@@ -16,7 +16,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Pengaturan"
+            android:text="@string/settings"
             android:textColor="@color/voca_dark_blue"
             android:textSize="22sp"
             android:textStyle="bold" />
@@ -26,7 +26,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="24dp"
-            android:text="Akun"
+            android:text="@string/account"
             android:textColor="@color/voca_text_gray"
             android:textSize="12sp"
             android:textStyle="bold" />
@@ -35,10 +35,10 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="12dp"
-            app:cardBackgroundColor="@color/white"
+            app:cardBackgroundColor="@color/voca_card_bg"
             app:cardCornerRadius="16dp"
             app:cardElevation="0dp"
-            app:strokeColor="#E2E8F0"
+            app:strokeColor="@color/voca_border"
             app:strokeWidth="1dp">
 
             <LinearLayout
@@ -67,7 +67,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginStart="16dp"
                         android:layout_weight="1"
-                        android:text="Profil Saya"
+                        android:text="@string/my_profile"
                         android:textColor="@color/voca_dark_blue" />
                     <ImageView
                         android:layout_width="16dp"
@@ -95,7 +95,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginStart="16dp"
                         android:layout_weight="1"
-                        android:text="Ganti Kata Sandi"
+                        android:text="@string/change_password"
                         android:textColor="@color/voca_dark_blue" />
                     <ImageView
                         android:layout_width="16dp"
@@ -111,7 +111,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="24dp"
-            android:text="Preferensi"
+            android:text="@string/preferences"
             android:textColor="@color/voca_text_gray"
             android:textSize="12sp"
             android:textStyle="bold" />
@@ -120,10 +120,10 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="12dp"
-            app:cardBackgroundColor="@color/white"
+            app:cardBackgroundColor="@color/voca_card_bg"
             app:cardCornerRadius="16dp"
             app:cardElevation="0dp"
-            app:strokeColor="#E2E8F0"
+            app:strokeColor="@color/voca_border"
             app:strokeWidth="1dp">
 
             <LinearLayout
@@ -152,7 +152,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginStart="16dp"
                         android:layout_weight="1"
-                        android:text="Mata Uang"
+                        android:text="@string/currency"
                         android:textColor="@color/voca_dark_blue" />
                     <TextView
                         android:id="@+id/tvCurrentCurrency"
@@ -188,7 +188,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginStart="16dp"
                         android:layout_weight="1"
-                        android:text="Bahasa"
+                        android:text="@string/language"
                         android:textColor="@color/voca_dark_blue" />
                     <TextView
                         android:id="@+id/tvCurrentLanguage"
@@ -220,7 +220,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginStart="16dp"
                         android:layout_weight="1"
-                        android:text="Mode Gelap"
+                        android:text="@string/dark_mode"
                         android:textColor="@color/voca_dark_blue" />
                     <com.google.android.material.switchmaterial.SwitchMaterial
                         android:id="@+id/switchDarkMode"
@@ -235,7 +235,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="24dp"
-            android:text="Notifikasi"
+            android:text="@string/notifications"
             android:textColor="@color/voca_text_gray"
             android:textSize="12sp"
             android:textStyle="bold" />
@@ -244,10 +244,10 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="12dp"
-            app:cardBackgroundColor="@color/white"
+            app:cardBackgroundColor="@color/voca_card_bg"
             app:cardCornerRadius="16dp"
             app:cardElevation="0dp"
-            app:strokeColor="#E2E8F0"
+            app:strokeColor="@color/voca_border"
             app:strokeWidth="1dp">
 
             <LinearLayout
@@ -269,12 +269,12 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Pengingat Tabungan"
+                        android:text="@string/goal_reminder"
                         android:textColor="@color/voca_dark_blue" />
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Ingatkan saat mendekati jatuh tempo"
+                        android:text="@string/goal_reminder_desc"
                         android:textColor="@color/voca_text_gray"
                         android:textSize="10sp" />
                 </LinearLayout>
