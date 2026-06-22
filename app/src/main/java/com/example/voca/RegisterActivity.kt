@@ -30,7 +30,9 @@ class RegisterActivity : AppCompatActivity() {
             val confirmPass = binding.etRegConfirmPassword.text.toString()
 
             if (name.isNotEmpty() && email.isNotEmpty() && pass.isNotEmpty()) {
-                if (pass == confirmPass) {
+                if (!email.endsWith("@gmail.com")) {
+                    Toast.makeText(this, "Email harus menggunakan @gmail.com", Toast.LENGTH_SHORT).show()
+                } else if (pass == confirmPass) {
                     registerUser(name, email, pass)
                 } else {
                     Toast.makeText(this, "Kata sandi tidak cocok", Toast.LENGTH_SHORT).show()

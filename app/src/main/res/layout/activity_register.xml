@@ -200,6 +200,8 @@
                     app:boxCornerRadiusTopEnd="12dp"
                     app:boxCornerRadiusTopStart="12dp"
                     app:boxStrokeWidth="0dp"
+                    app:endIconMode="password_toggle"
+                    app:endIconTint="@color/voca_text_gray"
                     app:hintEnabled="false">
 
                     <com.google.android.material.textfield.TextInputEditText

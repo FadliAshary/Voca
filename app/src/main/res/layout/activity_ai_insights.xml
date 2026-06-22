@@ -86,7 +86,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Prediksi Pengeluaran"
-                        android:textColor="@color/white"
+                        android:textColor="@color/voca_primary_blue"
                         android:textStyle="bold" />
 
                     <TextView
@@ -95,7 +95,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginTop="8dp"
                         android:text="Berdasarkan tren Anda, pengeluaran bulan depan diperkirakan akan naik 5%."
-                        android:textColor="#A0B0C5"
+                        android:textColor="@color/voca_text_gray"
                         android:textSize="14sp" />
 
                 </LinearLayout>
@@ -120,7 +120,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Rekomendasi Penghematan"
-                        android:textColor="@color/voca_dark_blue"
+                        android:textColor="@color/voca_primary_blue"
                         android:textStyle="bold" />
 
                     <TextView
@@ -154,7 +154,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Status Tabungan Impian"
-                        android:textColor="@color/white"
+                        android:textColor="@color/voca_primary_blue"
                         android:textStyle="bold" />
 
                     <TextView
@@ -163,7 +163,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginTop="8dp"
                         android:text="Tabungan 'Sepatu Baru' Anda akan tercapai dalam 2 bulan jika tren menabung ini konsisten."
-                        android:textColor="#A0B0C5"
+                        android:textColor="@color/voca_text_gray"
                         android:textSize="14sp" />
 
                 </LinearLayout>
@@ -195,7 +195,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="Skor Kesehatan Keuangan"
-                            android:textColor="@color/voca_dark_blue"
+                            android:textColor="@color/voca_primary_blue"
                             android:textStyle="bold" />
 
                         <TextView
