@@ -2,12 +2,16 @@ package com.example.voca
 
 import android.app.DatePickerDialog
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
+import android.widget.EditText
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.example.voca.database.DatabaseHelper
 import com.example.voca.databinding.ActivityAddGoalBinding
 import com.example.voca.utils.CurrencyUtils
 import com.example.voca.utils.SessionManager
+import java.text.DecimalFormat
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -25,7 +29,14 @@ class AddGoalActivity : AppCompatActivity() {
         db = DatabaseHelper(this)
         session = SessionManager(this)
 
+        val currencyCode = session.getCurrency()
+        binding.tvLabelTarget.text = "Harga Target ($currencyCode)"
+        binding.tvLabelInitial.text = "Uang Terkumpul Awal ($currencyCode)"
+
         binding.toolbar.setNavigationOnClickListener { finish() }
+
+        setupAmountFormatting(binding.etTargetAmount)
+        setupAmountFormatting(binding.etInitialAmount)
 
         binding.btnGoalDate.setOnClickListener {
             DatePickerDialog(this, { _, year, month, day ->
@@ -40,10 +51,37 @@ class AddGoalActivity : AppCompatActivity() {
         }
     }
 
+    private fun setupAmountFormatting(editText: EditText) {
+        editText.addTextChangedListener(object : TextWatcher {
+            private var current = ""
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+            override fun afterTextChanged(s: Editable?) {
+                if (s.toString() != current) {
+                    editText.removeTextChangedListener(this)
+
+                    val cleanString = s.toString().replace(".", "")
+                    if (cleanString.isNotEmpty()) {
+                        val parsed = cleanString.toDouble()
+                        val formatted = DecimalFormat("#,###").format(parsed).replace(",", ".")
+
+                        current = formatted
+                        editText.setText(formatted)
+                        editText.setSelection(formatted.length)
+                    } else {
+                        current = ""
+                    }
+
+                    editText.addTextChangedListener(this)
+                }
+            }
+        })
+    }
+
     private fun saveGoal() {
         val name = binding.etGoalName.text.toString()
-        val targetStr = binding.etTargetAmount.text.toString()
-        val initialStr = binding.etInitialAmount.text.toString()
+        val targetStr = binding.etTargetAmount.text.toString().replace(".", "")
+        val initialStr = binding.etInitialAmount.text.toString().replace(".", "")
         val deadline = binding.tvGoalDeadline.text.toString()
         val note = binding.etGoalNote.text.toString()
 

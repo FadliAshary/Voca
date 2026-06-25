@@ -42,6 +42,31 @@ class RegisterActivity : AppCompatActivity() {
             }
         }
 
+        setupLoginLink()
+    }
+
+    private fun setupLoginLink() {
+        val text = "Sudah memiliki akses? Masuk di sini"
+        val spannable = android.text.SpannableString(text)
+        val start = text.indexOf("Masuk di sini")
+        val end = start + "Masuk di sini".length
+        
+        if (start != -1) {
+            spannable.setSpan(
+                android.text.style.ForegroundColorSpan(android.graphics.Color.parseColor("#3B82F6")),
+                start,
+                end,
+                android.text.Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
+            )
+            spannable.setSpan(
+                android.text.style.StyleSpan(android.graphics.Typeface.BOLD),
+                start,
+                end,
+                android.text.Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
+            )
+        }
+        binding.tvLoginLink.text = spannable
+
         binding.tvLoginLink.setOnClickListener {
             finish()
         }

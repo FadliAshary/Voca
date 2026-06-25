@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#F8FAFC">
+    android:background="@color/background_adaptive">
 
     <com.google.android.material.appbar.AppBarLayout
         android:layout_width="match_parent"
@@ -22,7 +22,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:text="Buat Target Tabungan"
-                android:textColor="@color/voca_dark_blue"
+                android:textColor="@color/text_adaptive"
                 android:textSize="18sp"
                 android:textStyle="bold" />
         </androidx.appcompat.widget.Toolbar>
@@ -42,10 +42,10 @@
             <com.google.android.material.card.MaterialCardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                app:cardBackgroundColor="@color/white"
+                app:cardBackgroundColor="@color/voca_card_bg"
                 app:cardCornerRadius="20dp"
                 app:cardElevation="0dp"
-                app:strokeColor="#E2E8F0"
+                app:strokeColor="@color/voca_border"
                 app:strokeWidth="1dp">
 
                 <LinearLayout
@@ -58,14 +58,14 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Nama Barang / Target"
-                        android:textColor="@color/voca_dark_blue"
+                        android:textColor="@color/text_adaptive"
                         android:textStyle="bold" />
 
                     <com.google.android.material.textfield.TextInputLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="8dp"
-                        app:boxBackgroundColor="#F1F5F9"
+                        app:boxBackgroundColor="@color/voca_input_bg"
                         app:boxCornerRadiusBottomEnd="12dp"
                         app:boxCornerRadiusBottomStart="12dp"
                         app:boxCornerRadiusTopEnd="12dp"
@@ -77,23 +77,24 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:hint="Contoh: Sepatu Baru"
-                            android:textColor="@color/black"
+                            android:textColor="@color/text_adaptive"
                             android:inputType="text" />
                     </com.google.android.material.textfield.TextInputLayout>
 
                     <TextView
+                        android:id="@+id/tvLabelTarget"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="16dp"
                         android:text="Harga Target (Rp)"
-                        android:textColor="@color/voca_dark_blue"
+                        android:textColor="@color/text_adaptive"
                         android:textStyle="bold" />
 
                     <com.google.android.material.textfield.TextInputLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="8dp"
-                        app:boxBackgroundColor="#F1F5F9"
+                        app:boxBackgroundColor="@color/voca_input_bg"
                         app:boxCornerRadiusBottomEnd="12dp"
                         app:boxCornerRadiusBottomStart="12dp"
                         app:boxCornerRadiusTopEnd="12dp"
@@ -105,23 +106,24 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:hint="0"
-                            android:textColor="@color/black"
+                            android:textColor="@color/text_adaptive"
                             android:inputType="numberDecimal" />
                     </com.google.android.material.textfield.TextInputLayout>
 
                     <TextView
+                        android:id="@+id/tvLabelInitial"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="16dp"
                         android:text="Uang Terkumpul Awal (Rp)"
-                        android:textColor="@color/voca_dark_blue"
+                        android:textColor="@color/text_adaptive"
                         android:textStyle="bold" />
 
                     <com.google.android.material.textfield.TextInputLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="8dp"
-                        app:boxBackgroundColor="#F1F5F9"
+                        app:boxBackgroundColor="@color/voca_input_bg"
                         app:boxCornerRadiusBottomEnd="12dp"
                         app:boxCornerRadiusBottomStart="12dp"
                         app:boxCornerRadiusTopEnd="12dp"
@@ -133,7 +135,7 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:hint="0"
-                            android:textColor="@color/black"
+                            android:textColor="@color/text_adaptive"
                             android:inputType="numberDecimal" />
                     </com.google.android.material.textfield.TextInputLayout>
 
@@ -142,7 +144,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginTop="16dp"
                         android:text="Tenggat Waktu (Opsional)"
-                        android:textColor="@color/voca_dark_blue"
+                        android:textColor="@color/text_adaptive"
                         android:textStyle="bold" />
 
                     <LinearLayout
@@ -151,7 +153,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginTop="8dp"
                         android:background="@drawable/logo_rounded_bg"
-                        android:backgroundTint="#F1F5F9"
+                        android:backgroundTint="@color/voca_input_bg"
                         android:clickable="true"
                         android:focusable="true"
                         android:gravity="center_vertical"
@@ -167,7 +169,7 @@
                             android:layout_height="wrap_content"
                             android:layout_marginStart="12dp"
                             android:text="Pilih Tanggal"
-                            android:textColor="@color/voca_dark_blue" />
+                            android:textColor="@color/text_adaptive" />
                     </LinearLayout>
 
                     <TextView
@@ -175,14 +177,14 @@
                         android:layout_height="wrap_content"
                         android:layout_marginTop="16dp"
                         android:text="Catatan (Opsional)"
-                        android:textColor="@color/voca_dark_blue"
+                        android:textColor="@color/text_adaptive"
                         android:textStyle="bold" />
 
                     <com.google.android.material.textfield.TextInputLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="8dp"
-                        app:boxBackgroundColor="#F1F5F9"
+                        app:boxBackgroundColor="@color/voca_input_bg"
                         app:boxCornerRadiusBottomEnd="12dp"
                         app:boxCornerRadiusBottomStart="12dp"
                         app:boxCornerRadiusTopEnd="12dp"
@@ -194,7 +196,7 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:hint="Tambahkan catatan di sini..."
-                            android:textColor="@color/black"
+                            android:textColor="@color/text_adaptive"
                             android:inputType="textMultiLine"
                             android:minLines="3"
                             android:gravity="top" />

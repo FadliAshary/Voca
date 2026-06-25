@@ -18,7 +18,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Halo, Jordan!"
-            android:textColor="@color/voca_dark_blue"
+            android:textColor="@color/text_adaptive"
             android:textSize="20sp"
             android:textStyle="bold"
             app:layout_constraintStart_toStartOf="parent"
@@ -29,8 +29,9 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="24dp"
-            app:cardBackgroundColor="@color/voca_dark_blue"
+            app:cardBackgroundColor="@color/voca_card_bg"
             app:cardCornerRadius="24dp"
+            app:cardElevation="2dp"
             app:layout_constraintTop_toBottomOf="@id/tvWelcome">
 
             <LinearLayout
@@ -44,7 +45,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/total_balance"
-                    android:textColor="#A0B0C5"
+                    android:textColor="@color/voca_text_gray"
                     android:textSize="12sp" />
 
                 <TextView
@@ -53,7 +54,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
                     android:text="Rp 0"
-                    android:textColor="@color/white"
+                    android:textColor="@color/text_adaptive"
                     android:textSize="32sp"
                     android:textStyle="bold" />
 
@@ -72,14 +73,14 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="@string/income"
-                            android:textColor="#A0B0C5"
+                            android:textColor="@color/voca_text_gray"
                             android:textSize="10sp" />
                         <TextView
                             android:id="@+id/tvIncome"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="Rp 0"
-                            android:textColor="@color/white"
+                            android:textColor="@color/text_adaptive"
                             android:textStyle="bold" />
                     </LinearLayout>
 
@@ -92,38 +93,90 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="@string/expense"
-                            android:textColor="#A0B0C5"
+                            android:textColor="@color/voca_text_gray"
                             android:textSize="10sp" />
                         <TextView
                             android:id="@+id/tvExpense"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="Rp 0"
-                            android:textColor="@color/white"
+                            android:textColor="@color/text_adaptive"
                             android:textStyle="bold" />
                     </LinearLayout>
                 </LinearLayout>
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
 
+        <HorizontalScrollView
+            android:id="@+id/scrollFilters"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:scrollbars="none"
+            app:layout_constraintTop_toBottomOf="@id/cardBalance">
+            <com.google.android.material.chip.ChipGroup
+                android:id="@+id/chipGroupFilters"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:singleSelection="true"
+                app:selectionRequired="true">
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/chipAll"
+                    style="@style/Widget.MaterialComponents.Chip.Choice"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Semua"
+                    android:textColor="@color/text_adaptive"
+                    android:checked="true" />
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/chipDaily"
+                    style="@style/Widget.MaterialComponents.Chip.Choice"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/text_adaptive"
+                    android:text="Harian" />
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/chipWeekly"
+                    style="@style/Widget.MaterialComponents.Chip.Choice"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/text_adaptive"
+                    android:text="Mingguan" />
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/chipMonthly"
+                    style="@style/Widget.MaterialComponents.Chip.Choice"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/text_adaptive"
+                    android:text="Bulanan" />
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/chipYearly"
+                    style="@style/Widget.MaterialComponents.Chip.Choice"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/text_adaptive"
+                    android:text="Tahunan" />
+            </com.google.android.material.chip.ChipGroup>
+        </HorizontalScrollView>
+
         <TextView
             android:id="@+id/tvRecentTransactions"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="24dp"
+            android:layout_marginTop="16dp"
             android:text="@string/recent_transactions"
-            android:textColor="@color/voca_dark_blue"
+            android:textColor="@color/text_adaptive"
             android:textSize="16sp"
             android:textStyle="bold"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/cardBalance" />
+            app:layout_constraintTop_toBottomOf="@id/scrollFilters" />
 
         <com.google.android.material.card.MaterialCardView
             android:id="@+id/cardRecentTransactions"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="12dp"
-            app:cardBackgroundColor="@color/voca_dark_blue"
+            app:cardBackgroundColor="@color/voca_card_bg"
             app:cardCornerRadius="16dp"
             app:cardElevation="0dp"
             app:layout_constraintTop_toBottomOf="@id/tvRecentTransactions">

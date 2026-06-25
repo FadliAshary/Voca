@@ -30,6 +30,9 @@ class EditGoalActivity : AppCompatActivity() {
         session = com.example.voca.utils.SessionManager(this)
         goalId = intent.getIntExtra("GOAL_ID", -1)
 
+        val currencyCode = session.getCurrency()
+        binding.tvLabelAddAmount.text = "Tambah Nominal ($currencyCode)"
+
         if (goalId != -1) {
             loadGoalData()
         } else {

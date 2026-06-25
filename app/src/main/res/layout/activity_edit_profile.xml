@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/voca_light_gray">
+    android:background="@color/background_adaptive">
 
     <com.google.android.material.appbar.AppBarLayout
         android:layout_width="match_parent"
@@ -15,14 +15,15 @@
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
-            app:navigationIcon="@drawable/ic_arrow_back">
+            app:navigationIcon="@drawable/ic_arrow_back"
+            app:navigationIconTint="@color/text_adaptive">
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:text="Edit Profil"
-                android:textColor="@color/voca_dark_blue"
+                android:textColor="@color/text_adaptive"
                 android:textSize="18sp"
                 android:textStyle="bold" />
         </androidx.appcompat.widget.Toolbar>
@@ -79,7 +80,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="32dp"
-                app:cardBackgroundColor="@color/white"
+                app:cardBackgroundColor="@color/voca_card_bg"
                 app:cardCornerRadius="20dp"
                 app:cardElevation="0dp"
                 app:strokeColor="@color/voca_border"
@@ -95,7 +96,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Nama Pengguna"
-                        android:textColor="@color/voca_dark_blue"
+                        android:textColor="@color/text_adaptive"
                         android:textStyle="bold" />
 
                     <com.google.android.material.textfield.TextInputLayout
@@ -107,14 +108,17 @@
                         app:boxCornerRadiusBottomStart="12dp"
                         app:boxCornerRadiusTopEnd="12dp"
                         app:boxCornerRadiusTopStart="12dp"
-                        app:boxStrokeWidth="0dp">
+                        app:boxStrokeWidth="0dp"
+                        app:hintTextColor="@color/voca_text_gray"
+                        app:placeholderTextColor="@color/voca_text_gray">
 
                         <com.google.android.material.textfield.TextInputEditText
                             android:id="@+id/etEditName"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:hint="Masukkan nama"
-                            android:textColor="@color/black"
+                            android:textColor="@color/text_adaptive"
+                            android:textColorHint="@color/voca_text_gray"
                             android:inputType="textPersonName" />
                     </com.google.android.material.textfield.TextInputLayout>
 
@@ -123,7 +127,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginTop="16dp"
                         android:text="Status / Jabatan"
-                        android:textColor="@color/voca_dark_blue"
+                        android:textColor="@color/text_adaptive"
                         android:textStyle="bold" />
 
                     <com.google.android.material.textfield.TextInputLayout
@@ -135,14 +139,17 @@
                         app:boxCornerRadiusBottomStart="12dp"
                         app:boxCornerRadiusTopEnd="12dp"
                         app:boxCornerRadiusTopStart="12dp"
-                        app:boxStrokeWidth="0dp">
+                        app:boxStrokeWidth="0dp"
+                        app:hintTextColor="@color/voca_text_gray"
+                        app:placeholderTextColor="@color/voca_text_gray">
 
                         <com.google.android.material.textfield.TextInputEditText
                             android:id="@+id/etEditStatus"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:hint="Contoh: Anggota Premium"
-                            android:textColor="@color/black"
+                            android:textColor="@color/text_adaptive"
+                            android:textColorHint="@color/voca_text_gray"
                             android:inputType="text" />
                     </com.google.android.material.textfield.TextInputLayout>
 
@@ -153,7 +160,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
-                app:cardBackgroundColor="@color/white"
+                app:cardBackgroundColor="@color/voca_card_bg"
                 app:cardCornerRadius="20dp"
                 app:cardElevation="0dp"
                 app:strokeColor="@color/voca_border"
@@ -185,7 +192,7 @@
                             android:layout_marginStart="16dp"
                             android:layout_weight="1"
                             android:text="Ganti Kata Sandi"
-                            android:textColor="@color/voca_dark_blue"
+                            android:textColor="@color/text_adaptive"
                             android:textStyle="bold" />
                         <ImageView
                             android:layout_width="20dp"
@@ -197,7 +204,7 @@
                     <View
                         android:layout_width="match_parent"
                         android:layout_height="1dp"
-                        android:background="@color/voca_input_bg" />
+                        android:background="@color/voca_border" />
 
                     <LinearLayout
                         android:layout_width="match_parent"
@@ -215,7 +222,7 @@
                             android:layout_marginStart="16dp"
                             android:layout_weight="1"
                             android:text="Mode Gelap"
-                            android:textColor="@color/voca_dark_blue"
+                            android:textColor="@color/text_adaptive"
                             android:textStyle="bold" />
                         <com.google.android.material.switchmaterial.SwitchMaterial
                             android:id="@+id/switchDarkMode"

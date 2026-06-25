@@ -68,7 +68,7 @@ class SettingsFragment : Fragment() {
         val lang = session.getLanguage()
         binding.tvCurrentLanguage.text = when (lang) {
             "id" -> "Indonesia"
-            "in" -> "Indonesia"
+            "zh" -> "Mandarin"
             else -> "English"
         }
     }
@@ -88,8 +88,8 @@ class SettingsFragment : Fragment() {
     }
 
     private fun showLanguageDialog() {
-        val languages = arrayOf("Indonesia", "English")
-        val codes = arrayOf("id", "en") // Changed 'in' to 'id' for better compatibility
+        val languages = arrayOf("Indonesia", "English", "Mandarin")
+        val codes = arrayOf("id", "en", "zh")
         AlertDialog.Builder(requireContext())
             .setTitle("Pilih Bahasa")
             .setItems(languages) { _, which ->

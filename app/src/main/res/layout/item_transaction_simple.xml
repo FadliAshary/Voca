@@ -29,7 +29,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Title"
-            android:textColor="@color/white"
+            android:textColor="@color/text_adaptive"
             android:textStyle="bold" />
 
         <TextView
@@ -37,7 +37,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Date"
-            android:textColor="#A0B0C5"
+            android:textColor="@color/text_adaptive"
             android:textSize="10sp" />
     </LinearLayout>
 
@@ -46,6 +46,6 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Amount"
-        android:textColor="@color/white"
+        android:textColor="@color/text_adaptive"
         android:textStyle="bold" />
 </LinearLayout>

@@ -23,7 +23,6 @@ class ProfileFragment : Fragment() {
     private val binding get() = _binding!!
     private lateinit var session: SessionManager
     private lateinit var db: DatabaseHelper
-    private var savingsTarget = 75.0 
     private var currentFilter = "Bulanan"
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
@@ -98,16 +97,18 @@ class ProfileFragment : Fragment() {
     private fun showSetTargetDialog() {
         val input = EditText(requireContext())
         input.inputType = android.text.InputType.TYPE_CLASS_NUMBER
-        input.hint = "Contoh: 75"
+        val currentTarget = session.getSavingsTarget()
+        input.setText(currentTarget.toInt().toString())
 
         AlertDialog.Builder(requireContext())
             .setTitle("Atur Target Tabungan (%)")
             .setView(input)
             .setPositiveButton("Simpan") { _, _ ->
-                val newTarget = input.text.toString().toDoubleOrNull()
+                val newTarget = input.text.toString().toFloatOrNull()
                 if (newTarget != null && newTarget in 0.0..100.0) {
-                    savingsTarget = newTarget
+                    session.setSavingsTarget(newTarget)
                     updateStats()
+                    Toast.makeText(requireContext(), "Target diperbarui", Toast.LENGTH_SHORT).show()
                 } else {
                     Toast.makeText(requireContext(), "Target tidak valid", Toast.LENGTH_SHORT).show()
                 }
@@ -153,13 +154,14 @@ class ProfileFragment : Fragment() {
         val currencyCode = session.getCurrency()
         binding.tvNetWorth.text = CurrencyUtils.formatCurrency(netWorth, currencyCode)
         
+        // Gunakan warna putih adaptif untuk nominal kekayaan bersih
+        binding.tvNetWorth.setTextColor(androidx.core.content.ContextCompat.getColor(requireContext(), R.color.text_adaptive))
+        
         if (netWorth >= 0) {
-            binding.tvNetWorth.setTextColor(android.graphics.Color.parseColor("#003285"))
             val trend = if (totalExpense > 0) (netWorth/totalExpense)*100 else 0.0
             binding.tvNetWorthTrend.text = "↗ +${String.format(Locale.getDefault(), "%.1f%%", trend)} Global"
             binding.tvNetWorthTrend.setTextColor(android.graphics.Color.parseColor("#10B981"))
         } else {
-            binding.tvNetWorth.setTextColor(android.graphics.Color.parseColor("#EF4444"))
             val trend = if (totalIncome > 0) (netWorth/totalIncome)*100 else 0.0
             binding.tvNetWorthTrend.text = "↘ ${String.format(Locale.getDefault(), "%.1f%%", trend)} Global"
             binding.tvNetWorthTrend.setTextColor(android.graphics.Color.parseColor("#EF4444"))
@@ -173,6 +175,8 @@ class ProfileFragment : Fragment() {
         
         binding.tvSavingsRatio.text = String.format(Locale.getDefault(), "%.1f%%", savingsRatio)
         binding.pbSavingsRatio.progress = savingsRatio.toInt().coerceIn(0, 100)
+        
+        val savingsTarget = session.getSavingsTarget()
         binding.tvTargetLabel.text = "Target: ${savingsTarget.toInt()}%"
     }
 

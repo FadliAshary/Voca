@@ -97,6 +97,18 @@ class SessionManager(context: Context) {
         return sharedPreferences.getFloat("budgetOffset_$userId", 0f)
     }
 
+    // Savings Target methods (Profile)
+    fun setSavingsTarget(percentage: Float) {
+        val userId = getUserId()
+        editor.putFloat("savingsTarget_$userId", percentage)
+        editor.apply()
+    }
+
+    fun getSavingsTarget(): Float {
+        val userId = getUserId()
+        return sharedPreferences.getFloat("savingsTarget_$userId", 75f)
+    }
+
     // New Preferences
     fun setCurrency(currency: String) {
         editor.putString("currency", currency)

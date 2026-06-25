@@ -1,17 +1,23 @@
 package com.example.voca
 
 import android.app.DatePickerDialog
+import android.content.Intent
+import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.os.Bundle
+import android.provider.MediaStore
 import android.view.View
 import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import com.example.voca.database.DatabaseHelper
 import com.example.voca.databinding.ActivityDetailTransactionBinding
+import com.example.voca.model.Finance
 import com.example.voca.utils.CurrencyUtils
 import com.example.voca.utils.SessionManager
 import java.io.File
+import java.io.FileOutputStream
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -23,7 +29,25 @@ class DetailTransactionActivity : AppCompatActivity() {
     private var transactionType: String = "expense"
     private var transactionCategory: String = "Lainnya"
     private var transactionDate: String = ""
+    private var currentImagePath: String? = null
     private var calendar = Calendar.getInstance()
+
+    private val cameraLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+        if (result.resultCode == RESULT_OK) {
+            val bitmap = result.data?.extras?.get("data") as? Bitmap
+            bitmap?.let { updateReceiptImage(it) }
+        }
+    }
+
+    private val galleryLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+        if (result.resultCode == RESULT_OK) {
+            val imageUri = result.data?.data
+            imageUri?.let {
+                val bitmap = MediaStore.Images.Media.getBitmap(this.contentResolver, it)
+                updateReceiptImage(bitmap)
+            }
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -55,6 +79,48 @@ class DetailTransactionActivity : AppCompatActivity() {
         binding.btnSaveChanges.setOnClickListener {
             saveChanges()
         }
+
+        binding.ivDetailReceipt.setOnClickListener {
+            showImagePickDialog()
+        }
+        
+        binding.layoutNoReceipt.setOnClickListener {
+            showImagePickDialog()
+        }
+    }
+
+    private fun showImagePickDialog() {
+        val options = arrayOf("Ambil Foto", "Pilih dari Galeri")
+        AlertDialog.Builder(this)
+            .setTitle("Ubah Bukti Pembayaran")
+            .setItems(options) { _, which ->
+                when (which) {
+                    0 -> cameraLauncher.launch(Intent(MediaStore.ACTION_IMAGE_CAPTURE))
+                    1 -> galleryLauncher.launch(Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI))
+                }
+            }
+            .show()
+    }
+
+    private fun updateReceiptImage(bitmap: Bitmap) {
+        currentImagePath = saveImageToInternalStorage(bitmap)
+        binding.ivDetailReceipt.setImageBitmap(bitmap)
+        binding.ivDetailReceipt.alpha = 1.0f
+        binding.layoutNoReceipt.visibility = View.GONE
+    }
+
+    private fun saveImageToInternalStorage(bitmap: Bitmap): String {
+        val fileName = "receipt_${System.currentTimeMillis()}.jpg"
+        val file = File(getExternalFilesDir(null), fileName)
+        try {
+            val fos = FileOutputStream(file)
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 90, fos)
+            fos.close()
+            return file.absolutePath
+        } catch (e: Exception) {
+            e.printStackTrace()
+            return ""
+        }
     }
 
     private fun setupEditListeners() {
@@ -70,7 +136,7 @@ class DetailTransactionActivity : AppCompatActivity() {
         }
 
         binding.rowDetailCategory.setOnClickListener {
-            val categories = arrayOf("Makanan", "Transport", "Belanja", "Lainnya")
+            val categories = arrayOf("Makanan", "Transport", "Belanja", "Tagihan", "Hiburan", "Kesehatan", "Pendidikan", "Rumah", "Hadiah", "Olahraga", "Travel", "Lainnya", "Gaji", "Bonus", "Investasi")
             AlertDialog.Builder(this)
                 .setTitle("Pilih Kategori")
                 .setItems(categories) { _, which ->
@@ -131,13 +197,16 @@ class DetailTransactionActivity : AppCompatActivity() {
 
     private fun saveChanges() {
         val title = binding.etDetailMerchant.text.toString()
+        val currencyCode = session.getCurrency()
         val amountStr = binding.etDetailAmount.text.toString()
+            .replace(currencyCode, "")
             .replace("Rp", "")
             .replace(".", "")
             .replace(",", ".")
+            .trim()
         val amount = amountStr.toDoubleOrNull() ?: 0.0
 
-        if (db.updateTransaction(transactionId, title, amount, transactionType, transactionCategory, transactionDate) > 0) {
+        if (db.updateTransaction(transactionId, title, amount, transactionType, transactionCategory, transactionDate, currentImagePath) > 0) {
             Toast.makeText(this, "Perubahan disimpan", Toast.LENGTH_SHORT).show()
             finish()
         } else {
@@ -146,14 +215,14 @@ class DetailTransactionActivity : AppCompatActivity() {
     }
 
     private fun loadTransactionDetails() {
-        val t = db.getTransactionById(transactionId)
+        val t = db.getFinanceById(transactionId)
         if (t != null) {
-            val title = t["title"] as String
-            val amount = t["amount"] as Double
-            transactionCategory = t["category"] as? String ?: "Lainnya"
-            transactionDate = t["date"] as String
-            transactionType = t["type"] as? String ?: "expense"
-            val imagePath = t["image_path"] as? String
+            val title = t.title
+            val amount = t.amount
+            transactionCategory = t.category
+            transactionDate = t.date
+            transactionType = t.type
+            currentImagePath = t.imagePath
 
             // Update calendar for DatePicker initial value
             try {
@@ -173,14 +242,17 @@ class DetailTransactionActivity : AppCompatActivity() {
             updateTypeUI()
 
             // Handle image
-            if (!imagePath.isNullOrEmpty()) {
-                val imgFile = File(imagePath)
+            if (!currentImagePath.isNullOrEmpty()) {
+                val imgFile = File(currentImagePath!!)
                 if (imgFile.exists()) {
                     val myBitmap = BitmapFactory.decodeFile(imgFile.absolutePath)
                     binding.ivDetailReceipt.setImageBitmap(myBitmap)
                     binding.ivDetailReceipt.alpha = 1.0f
                     binding.layoutNoReceipt.visibility = View.GONE
                 }
+            } else {
+                binding.ivDetailReceipt.alpha = 0.3f
+                binding.layoutNoReceipt.visibility = View.VISIBLE
             }
 
             // Set icon based on category

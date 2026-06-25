@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/voca_light_gray"
+    android:background="@color/background_adaptive"
     android:fillViewport="true"
     android:clipToPadding="false"
     android:paddingBottom="120dp">
@@ -52,7 +52,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
             android:text="Patrick"
-            android:textColor="@color/voca_dark_blue"
+            android:textColor="@color/text_adaptive"
             android:textSize="22sp"
             android:textStyle="bold" />
 
@@ -70,7 +70,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="32dp"
-            app:cardBackgroundColor="@color/white"
+            app:cardBackgroundColor="@color/voca_card_bg"
             app:cardCornerRadius="20dp"
             app:cardElevation="0dp"
             app:strokeColor="@color/voca_border"
@@ -93,7 +93,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
                     android:text="Rp 3.000.000"
-                    android:textColor="@color/voca_dark_blue"
+                    android:textColor="@color/text_adaptive"
                     android:textSize="32sp"
                     android:textStyle="bold" />
                 <TextView
@@ -113,7 +113,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
-            app:cardBackgroundColor="@color/white"
+            app:cardBackgroundColor="@color/voca_card_bg"
             app:cardCornerRadius="20dp"
             app:cardElevation="0dp"
             app:strokeColor="@color/voca_border"
@@ -155,7 +155,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="4dp"
                     android:text="32.5%"
-                    android:textColor="@color/voca_dark_blue"
+                    android:textColor="@color/text_adaptive"
                     android:textSize="32sp"
                     android:textStyle="bold" />
                 <ProgressBar
@@ -186,7 +186,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="24dp"
-            app:cardBackgroundColor="@color/voca_input_bg"
+            app:cardBackgroundColor="@color/voca_card_bg"
             app:cardCornerRadius="16dp"
             app:cardElevation="0dp">
             <LinearLayout
@@ -198,13 +198,15 @@
                     android:id="@+id/btnAccountSettings"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:background="@color/white"
+                    android:background="?attr/selectableItemBackground"
+                    android:clickable="true"
+                    android:focusable="true"
                     android:gravity="center_vertical"
                     android:padding="16dp">
                     <com.google.android.material.card.MaterialCardView
                         android:layout_width="40dp"
                         android:layout_height="40dp"
-                        app:cardBackgroundColor="#F1F5F9"
+                        app:cardBackgroundColor="@color/voca_input_bg"
                         app:cardCornerRadius="20dp"
                         app:cardElevation="0dp">
                         <ImageView
@@ -224,7 +226,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="Pengaturan Akun"
-                            android:textColor="@color/voca_dark_blue"
+                            android:textColor="@color/text_adaptive"
                             android:textStyle="bold" />
                         <TextView
                             android:layout_width="wrap_content"
@@ -240,19 +242,21 @@
                         app:tint="@color/voca_text_gray" />
                 </LinearLayout>
 
-                <View android:layout_width="match_parent" android:layout_height="1dp" android:background="@color/voca_input_bg" />
+                <View android:layout_width="match_parent" android:layout_height="1dp" android:background="@color/voca_border" />
 
                 <LinearLayout
                     android:id="@+id/btnSetTarget"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:background="@color/white"
+                    android:background="?attr/selectableItemBackground"
+                    android:clickable="true"
+                    android:focusable="true"
                     android:gravity="center_vertical"
                     android:padding="16dp">
                     <com.google.android.material.card.MaterialCardView
                         android:layout_width="40dp"
                         android:layout_height="40dp"
-                        app:cardBackgroundColor="#F1F5F9"
+                        app:cardBackgroundColor="@color/voca_input_bg"
                         app:cardCornerRadius="20dp"
                         app:cardElevation="0dp">
                         <ImageView
@@ -272,7 +276,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="Target Tabungan"
-                            android:textColor="@color/voca_dark_blue"
+                            android:textColor="@color/text_adaptive"
                             android:textStyle="bold" />
                         <TextView
                             android:layout_width="wrap_content"
@@ -288,19 +292,21 @@
                         app:tint="@color/voca_text_gray" />
                 </LinearLayout>
 
-                <View android:layout_width="match_parent" android:layout_height="1dp" android:background="@color/voca_input_bg" />
+                <View android:layout_width="match_parent" android:layout_height="1dp" android:background="@color/voca_border" />
 
                 <LinearLayout
                     android:id="@+id/btnAiInsight"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:background="#FFFBEB"
+                    android:background="?attr/selectableItemBackground"
+                    android:clickable="true"
+                    android:focusable="true"
                     android:gravity="center_vertical"
                     android:padding="16dp">
                     <com.google.android.material.card.MaterialCardView
                         android:layout_width="40dp"
                         android:layout_height="40dp"
-                        app:cardBackgroundColor="#FEF3C7"
+                        app:cardBackgroundColor="@color/voca_input_bg"
                         app:cardCornerRadius="20dp"
                         app:cardElevation="0dp">
                         <ImageView
@@ -324,17 +330,17 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:text="Wawasan AI"
-                                android:textColor="@color/voca_dark_blue"
+                                android:textColor="@color/text_adaptive"
                                 android:textStyle="bold" />
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_marginStart="8dp"
-                                android:background="@color/voca_dark_blue"
+                                android:background="@color/voca_accent_yellow"
                                 android:paddingHorizontal="6dp"
                                 android:paddingVertical="2dp"
                                 android:text="BARU"
-                                android:textColor="@color/white"
+                                android:textColor="@color/voca_dark_blue"
                                 android:textSize="8sp"
                                 android:textStyle="bold" />
                         </LinearLayout>
@@ -364,7 +370,7 @@
             android:text="Keluar"
             android:textColor="#EF4444"
             app:cornerRadius="12dp"
-            app:strokeColor="#E2E8F0" />
+            app:strokeColor="@color/voca_border" />
 
     </LinearLayout>
 </androidx.core.widget.NestedScrollView>

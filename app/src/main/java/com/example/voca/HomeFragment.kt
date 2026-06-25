@@ -13,6 +13,7 @@ import com.example.voca.database.DatabaseHelper
 import com.example.voca.databinding.FragmentHomeBinding
 import com.example.voca.utils.CurrencyUtils
 import com.example.voca.utils.SessionManager
+import java.text.SimpleDateFormat
 import java.util.*
 
 class HomeFragment : Fragment() {
@@ -34,7 +35,15 @@ class HomeFragment : Fragment() {
         val fullName = session.getUserName() ?: "User"
         val firstName = fullName.split("@")[0].split(" ")[0]
         binding.tvWelcome.text = "Halo, $firstName"
+        
+        setupFilters()
         updateUI()
+    }
+
+    private fun setupFilters() {
+        binding.chipGroupFilters.setOnCheckedChangeListener { _, checkedId ->
+            updateUI()
+        }
     }
 
     override fun onResume() {
@@ -43,12 +52,28 @@ class HomeFragment : Fragment() {
     }
 
     private fun updateUI() {
+        if (_binding == null) return
         val userId = session.getUserId()
-        val transactions = db.getAllTransactions(userId)
+        val allTransactions = db.getAllTransactions(userId)
+        
+        val selectedFilter = when (binding.chipGroupFilters.checkedChipId) {
+            R.id.chipDaily -> "Harian"
+            R.id.chipWeekly -> "Mingguan"
+            R.id.chipMonthly -> "Bulanan"
+            R.id.chipYearly -> "Tahunan"
+            else -> "Semua"
+        }
+
+        val filteredTransactions = if (selectedFilter == "Semua") {
+            allTransactions
+        } else {
+            filterTransactions(allTransactions, selectedFilter)
+        }
+
         var totalIncome = 0.0
         var totalExpense = 0.0
 
-        for (t in transactions) {
+        for (t in filteredTransactions) {
             val amount = (t["amount"] as? Double) ?: 0.0
             if (t["type"] == "income") totalIncome += amount else totalExpense += amount
         }
@@ -56,13 +81,53 @@ class HomeFragment : Fragment() {
         val netWorth = totalIncome - totalExpense
         val currencyCode = session.getCurrency()
         
-        // Total Saldo = Net worth (overall money)
+        // Update Summary Card based on filtered data
         binding.tvTotalBalance.text = CurrencyUtils.formatCurrency(netWorth, currencyCode)
-        
         binding.tvIncome.text = CurrencyUtils.formatCurrency(totalIncome, currencyCode)
         binding.tvExpense.text = CurrencyUtils.formatCurrency(totalExpense, currencyCode)
 
-        updateRecentTransactions(transactions)
+        // Show label for filtered period
+        binding.tvRecentTransactions.text = if (selectedFilter == "Semua") "Transaksi Terbaru" else "Transaksi $selectedFilter"
+
+        // Send only filtered transactions to the list view!
+        updateRecentTransactions(filteredTransactions)
+    }
+
+    private fun filterTransactions(transactions: List<Map<String, Any>>, filter: String): List<Map<String, Any>> {
+        val calendar = Calendar.getInstance()
+        val dateFormat = SimpleDateFormat("dd MMM yyyy", Locale.getDefault())
+        val now = calendar.time
+
+        return transactions.filter {
+            val tDate = it["date"]?.toString() ?: ""
+            try {
+                val date = dateFormat.parse(tDate) ?: return@filter false
+                val calT = Calendar.getInstance().apply { time = date }
+                val calNow = Calendar.getInstance().apply { time = now }
+
+                when (filter) {
+                    "Harian" -> {
+                        calT.get(Calendar.YEAR) == calNow.get(Calendar.YEAR) &&
+                        calT.get(Calendar.DAY_OF_YEAR) == calNow.get(Calendar.DAY_OF_YEAR)
+                    }
+                    "Mingguan" -> {
+                        // In the same week of year
+                        calT.get(Calendar.YEAR) == calNow.get(Calendar.YEAR) &&
+                        calT.get(Calendar.WEEK_OF_YEAR) == calNow.get(Calendar.WEEK_OF_YEAR)
+                    }
+                    "Bulanan" -> {
+                        calT.get(Calendar.YEAR) == calNow.get(Calendar.YEAR) &&
+                        calT.get(Calendar.MONTH) == calNow.get(Calendar.MONTH)
+                    }
+                    "Tahunan" -> {
+                        calT.get(Calendar.YEAR) == calNow.get(Calendar.YEAR)
+                    }
+                    else -> true
+                }
+            } catch (e: Exception) {
+                false
+            }
+        }
     }
 
     private fun updateRecentTransactions(transactions: List<Map<String, Any>>) {

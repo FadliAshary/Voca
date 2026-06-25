@@ -40,6 +40,7 @@
         <activity android:name=".ChangePasswordActivity" />
         <activity android:name=".TipsActivity" />
         <activity android:name=".MainActivity" />
+        <activity android:name=".CategoryTransactionActivity" />
 
     </application>
 

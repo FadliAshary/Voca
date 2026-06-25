@@ -1,21 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- Invert colors for Dark Mode to mimic Google/Material 3 Dark Theme -->
-    <color name="black">#E2E8F0</color>
-    <color name="white">#121212</color>
+    <color name="black">#FF000000</color>
+    <color name="white">#FFFFFFFF</color>
 
-    <color name="voca_dark_blue">#F8FAFC</color>
+    <color name="voca_dark_blue">#1A2D4C</color> <!-- Unified dark blue -->
     <color name="voca_primary_blue">#8AB4F8</color>
     <color name="voca_accent_yellow">#FDD663</color>
 
-    <color name="voca_light_gray">#121212</color>
-    <color name="voca_text_gray">#9AA0A6</color>
-    <color name="voca_card_bg">#202124</color>
-    <color name="voca_input_bg">#303134</color>
-    <color name="voca_border">#3C4043</color>
+    <color name="voca_light_gray">#0F172A</color>
+    <color name="voca_text_gray">#CBD5E1</color>
+    <color name="voca_card_bg">#1E293B</color>
+    <color name="voca_input_bg">#0F172A</color>
+    <color name="voca_border">#334155</color>
 
     <color name="blue_primary">#8AB4F8</color>
     <color name="yellow_accent">#FDD663</color>
     <color name="gray_light">#121212</color>
     <color name="voca_indicator">#3D3E5E</color>
+
+    <!-- Adaptive Colors -->
+    <color name="text_adaptive">#FFFFFF</color>
+    <color name="background_adaptive">#0F172A</color>
 </resources>

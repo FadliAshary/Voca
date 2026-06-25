@@ -18,7 +18,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/monthly_budget"
-            android:textColor="@color/voca_dark_blue"
+            android:textColor="@color/text_adaptive"
             android:textSize="22sp"
             android:textStyle="bold" />
 
@@ -28,7 +28,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="4dp"
             android:text="Mei 2024"
-            android:textColor="@color/voca_text_gray" />
+            android:textColor="@color/text_adaptive" />
 
         <com.google.android.material.card.MaterialCardView
             android:id="@+id/cardBudgetBalance"
@@ -61,7 +61,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
                     android:text="Rp 0"
-                    android:textColor="@color/voca_dark_blue"
+                    android:textColor="@color/text_adaptive"
                     android:textSize="28sp"
                     android:textStyle="bold" />
 
@@ -91,7 +91,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="24dp"
             android:text="@string/category_details"
-            android:textColor="@color/voca_dark_blue"
+            android:textColor="@color/text_adaptive"
             android:textSize="16sp"
             android:textStyle="bold" />
 
@@ -125,7 +125,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/savings_goals"
-                android:textColor="@color/voca_dark_blue"
+                android:textColor="@color/text_adaptive"
                 android:textSize="16sp"
                 android:textStyle="bold" />
             <TextView

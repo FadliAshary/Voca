@@ -65,6 +65,9 @@ class BudgetFragment : Fragment() {
         val currencyCode = session.getCurrency()
         val currentTargetRaw = session.getBudgetTarget().toDouble()
         val currentTarget = CurrencyUtils.convertFromIDR(currentTargetRaw, currencyCode)
+
+        val tvNominalLabel = view.findViewById<TextView>(R.id.tvDialogNominalLabel)
+        tvNominalLabel.text = "Nominal Target ($currencyCode)"
         
         // Cek apakah budget sudah tercapai untuk menampilkan tombol refresh
         val userId = session.getUserId()
@@ -247,34 +250,69 @@ class BudgetFragment : Fragment() {
 
     private fun updateCategoryList(categoryExpenses: Map<String, Double>) {
         binding.categoryContainer.removeAllViews()
-        val categoryTargets = mapOf("Makanan" to 3000000.0, "Transport" to 1500000.0, "Belanja" to 4000000.0, "Lainnya" to 3500000.0)
-        val sortedCategories = categoryTargets.keys.sortedByDescending { categoryExpenses[it] ?: 0.0 }
+        val categoryTargets = mapOf(
+            "Makanan" to 3000000.0,
+            "Transport" to 1500000.0,
+            "Belanja" to 4000000.0,
+            "Tagihan" to 2000000.0,
+            "Hiburan" to 1000000.0,
+            "Kesehatan" to 1500000.0,
+            "Pendidikan" to 2500000.0,
+            "Rumah" to 3000000.0,
+            "Hadiah" to 500000.0,
+            "Olahraga" to 500000.0,
+            "Travel" to 2000000.0,
+            "Lainnya" to 1000000.0
+        )
+        
+        // Include ALL categories that have expenses, plus core defaults
+        val allCategoriesWithExpenses = categoryExpenses.keys
+        val defaultCategories = categoryTargets.keys
+        val combinedCategories = (allCategoriesWithExpenses + defaultCategories).distinct()
+        
+        val sortedCategories = combinedCategories.sortedByDescending { categoryExpenses[it] ?: 0.0 }
 
         sortedCategories.forEach { name ->
             val expense = categoryExpenses[name] ?: 0.0
-            val target = categoryTargets[name] ?: 1.0
-            val itemView = layoutInflater.inflate(R.layout.item_budget_category, binding.categoryContainer, false)
-            val tvName = itemView.findViewById<TextView>(R.id.tvCatName)
-            val pbCat = itemView.findViewById<ProgressBar>(R.id.pbCatBudget)
-            val tvPercent = itemView.findViewById<TextView>(R.id.tvCatPercent)
-            val ivIcon = itemView.findViewById<ImageView>(R.id.ivCatIcon)
-            val cardIcon = itemView.findViewById<com.google.android.material.card.MaterialCardView>(R.id.cardCatIcon)
+            val target = categoryTargets[name] ?: 1000000.0 // Default target for unlisted
+            
+            // Only show category if there is expense OR it's one of the top 4 default categories
+            if (expense > 0 || name in listOf("Makanan", "Transport", "Belanja", "Lainnya")) {
+                val itemView = layoutInflater.inflate(R.layout.item_budget_category, binding.categoryContainer, false)
+                val tvName = itemView.findViewById<TextView>(R.id.tvCatName)
+                val pbCat = itemView.findViewById<ProgressBar>(R.id.pbCatBudget)
+                val tvPercent = itemView.findViewById<TextView>(R.id.tvCatPercent)
+                val ivIcon = itemView.findViewById<ImageView>(R.id.ivCatIcon)
+                val cardIcon = itemView.findViewById<com.google.android.material.card.MaterialCardView>(R.id.cardCatIcon)
 
-            tvName.text = name
-            val percent = ((expense / target) * 100).toInt().coerceIn(0, 100)
-            pbCat.progress = percent
-            tvPercent.text = "$percent%"
+                tvName.text = name
+                val percent = ((expense / target) * 100).toInt().coerceIn(0, 100)
+                pbCat.progress = percent
+                tvPercent.text = "$percent%"
 
-            when (name) {
-                "Makanan" -> {
-                    ivIcon.setImageResource(R.drawable.ic_food)
-                    cardIcon.setCardBackgroundColor(android.graphics.Color.parseColor("#E2F2FF"))
+                when (name) {
+                    "Makanan" -> ivIcon.setImageResource(R.drawable.ic_food)
+                    "Transport" -> ivIcon.setImageResource(R.drawable.ic_transport)
+                    "Belanja" -> ivIcon.setImageResource(R.drawable.ic_shopping)
+                    "Tagihan" -> ivIcon.setImageResource(R.drawable.ic_bill)
+                    "Hiburan" -> ivIcon.setImageResource(R.drawable.ic_entertainment)
+                    "Kesehatan" -> ivIcon.setImageResource(R.drawable.ic_health)
+                    "Pendidikan" -> ivIcon.setImageResource(R.drawable.ic_education)
+                    "Rumah" -> ivIcon.setImageResource(R.drawable.ic_home_nav)
+                    "Hadiah" -> ivIcon.setImageResource(R.drawable.ic_gift)
+                    "Olahraga" -> ivIcon.setImageResource(R.drawable.ic_sport)
+                    "Travel" -> ivIcon.setImageResource(R.drawable.ic_travel)
+                    else -> ivIcon.setImageResource(R.drawable.ic_more)
                 }
-                "Transport" -> ivIcon.setImageResource(R.drawable.ic_transport)
-                "Belanja" -> ivIcon.setImageResource(R.drawable.ic_shopping)
-                else -> ivIcon.setImageResource(R.drawable.ic_more)
+
+                itemView.setOnClickListener {
+                    val intent = Intent(requireContext(), CategoryTransactionActivity::class.java)
+                    intent.putExtra("CATEGORY_NAME", name)
+                    startActivity(intent)
+                }
+
+                binding.categoryContainer.addView(itemView)
             }
-            binding.categoryContainer.addView(itemView)
         }
     }
 

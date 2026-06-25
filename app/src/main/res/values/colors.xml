@@ -2,7 +2,9 @@
 <resources>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
-    <color name="voca_dark_blue">#001B3D</color>
+
+    <!-- Theme specific colors -->
+    <color name="voca_dark_blue">#1A2D4C</color>
     <color name="voca_primary_blue">#003285</color>
     <color name="voca_accent_yellow">#FFC436</color>
     <color name="voca_light_gray">#F8FAFC</color>
@@ -10,8 +12,13 @@
     <color name="voca_card_bg">#FFFFFF</color>
     <color name="voca_input_bg">#F1F5F9</color>
     <color name="voca_border">#E2E8F0</color>
+
     <color name="blue_primary">#003285</color>
     <color name="yellow_accent">#FFC436</color>
     <color name="gray_light">#F5F7FA</color>
     <color name="voca_indicator">#D7D9F2</color>
+
+    <!-- Adaptive Colors -->
+    <color name="text_adaptive">#000000</color>
+    <color name="background_adaptive">#FFFFFF</color>
 </resources>

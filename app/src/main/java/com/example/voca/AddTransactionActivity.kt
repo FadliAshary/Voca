@@ -11,6 +11,8 @@ import android.provider.MediaStore
 import android.view.View
 import android.view.WindowInsetsController
 import android.widget.ImageView
+import android.widget.LinearLayout
+import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
@@ -65,22 +67,36 @@ class AddTransactionActivity : AppCompatActivity() {
         binding = ActivityAddTransactionBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        // Make status bar light
-        window.statusBarColor = ContextCompat.getColor(this, R.color.voca_light_gray)
+        // Make status bar adaptive
+        window.statusBarColor = ContextCompat.getColor(this, R.color.background_adaptive)
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.R) {
+            val isDark = (resources.configuration.uiMode and android.content.res.Configuration.UI_MODE_NIGHT_MASK) == android.content.res.Configuration.UI_MODE_NIGHT_YES
             window.insetsController?.setSystemBarsAppearance(
-                WindowInsetsController.APPEARANCE_LIGHT_STATUS_BARS,
+                if (isDark) 0 else WindowInsetsController.APPEARANCE_LIGHT_STATUS_BARS,
                 WindowInsetsController.APPEARANCE_LIGHT_STATUS_BARS
             )
         } else {
             @Suppress("DEPRECATION")
-            window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
+            val isDark = (resources.configuration.uiMode and android.content.res.Configuration.UI_MODE_NIGHT_MASK) == android.content.res.Configuration.UI_MODE_NIGHT_YES
+            if (!isDark) {
+                window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
+            }
         }
 
         db = DatabaseHelper(this)
         session = com.example.voca.utils.SessionManager(this)
 
+        val currencyCode = session.getCurrency()
+        binding.tvCurrencySymbol.text = currencyCode
+
         setupToolbar()
+        
+        // Ensure X button and title are white in dark mode
+        val isDark = (resources.configuration.uiMode and android.content.res.Configuration.UI_MODE_NIGHT_MASK) == android.content.res.Configuration.UI_MODE_NIGHT_YES
+        if (isDark) {
+            binding.toolbar.navigationIcon?.setTint(Color.WHITE)
+        }
+        
         setupCategorySelection()
         setupDatePicker()
         setupAccountPicker()
@@ -293,10 +309,12 @@ class AddTransactionActivity : AppCompatActivity() {
             if (checkedId == R.id.rbIncome) {
                 binding.gridExpenseCategories.visibility = View.GONE
                 binding.gridIncomeCategories.visibility = View.VISIBLE
+                binding.tvAccountStatus.text = "DEBIT"
                 selectCategory("Gaji")
             } else {
                 binding.gridExpenseCategories.visibility = View.VISIBLE
                 binding.gridIncomeCategories.visibility = View.GONE
+                binding.tvAccountStatus.text = "CREDIT"
                 selectCategory("Makanan")
             }
         }
@@ -322,8 +340,14 @@ class AddTransactionActivity : AppCompatActivity() {
 
         allCards.forEach { card ->
             val icon = card.getChildAt(0) as ImageView
-            card.setCardBackgroundColor(Color.parseColor("#F1F5F9"))
-            icon.imageTintList = ColorStateList.valueOf(Color.parseColor("#718096"))
+            card.setCardBackgroundColor(ContextCompat.getColor(this, R.color.voca_input_bg))
+            icon.imageTintList = ColorStateList.valueOf(ContextCompat.getColor(this, R.color.voca_text_gray))
+            
+            val parent = card.parent as LinearLayout
+            if (parent.childCount > 1 && parent.getChildAt(1) is TextView) {
+                val textView = parent.getChildAt(1) as TextView
+                textView.setTextColor(ContextCompat.getColor(this, R.color.text_adaptive))
+            }
         }
 
         // Highlight selected
@@ -348,6 +372,12 @@ class AddTransactionActivity : AppCompatActivity() {
 
         selectedCard.setCardBackgroundColor(ContextCompat.getColor(this, R.color.voca_primary_blue))
         (selectedCard.getChildAt(0) as ImageView).imageTintList = ColorStateList.valueOf(Color.WHITE)
+        
+        val selectedParent = selectedCard.parent as LinearLayout
+        if (selectedParent.childCount > 1 && selectedParent.getChildAt(1) is TextView) {
+            // Use primary blue or adaptive text color instead of white for the label outside the circle
+            (selectedParent.getChildAt(1) as TextView).setTextColor(ContextCompat.getColor(this, R.color.voca_primary_blue))
+        }
     }
 
     private fun saveTransaction() {
@@ -371,9 +401,9 @@ class AddTransactionActivity : AppCompatActivity() {
             
             val userId = session.getUserId()
 
-            // 1. Simpan ke Database Lokal (Status Sync Awal = 0)
+            // 1. Simpan ke Database Lokal
             val localId = db.addTransaction(userId, title, amount, type, selectedCategory, dateLocal, currentImagePath, isSynced = 0)
-
+            
             // 2. Simpan ke Server XAMPP
             val apiService = ApiService.getInstance()
             apiService.addTransaction(userId, title, amount, type, selectedCategory, dateServer)

@@ -139,7 +139,7 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
         return db.insert(TABLE_FINANCE, null, values)
     }
 
-    fun updateTransaction(id: Int, title: String, amount: Double, type: String, category: String, date: String, isSynced: Int = 0): Int {
+    fun updateTransaction(id: Int, title: String, amount: Double, type: String, category: String, date: String, imagePath: String? = null, isSynced: Int = 0): Int {
         val db = this.writableDatabase
         val values = ContentValues()
         values.put(COLUMN_FIN_TITLE, title)
@@ -147,6 +147,9 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
         values.put(COLUMN_FIN_TYPE, type)
         values.put(COLUMN_FIN_CATEGORY, category)
         values.put(COLUMN_FIN_DATE, date)
+        if (imagePath != null) {
+            values.put(COLUMN_FIN_IMAGE, imagePath)
+        }
         values.put(COLUMN_FIN_IS_SYNCED, isSynced)
         return db.update(TABLE_FINANCE, values, "$COLUMN_FIN_ID=?", arrayOf(id.toString()))
     }
@@ -222,6 +225,28 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
         }
         cursor.close()
         return map
+    }
+
+    fun getFinanceById(id: Int): com.example.voca.model.Finance? {
+        val db = this.readableDatabase
+        val cursor = db.rawQuery("SELECT * FROM $TABLE_FINANCE WHERE $COLUMN_FIN_ID=?", arrayOf(id.toString()))
+        var finance: com.example.voca.model.Finance? = null
+        if (cursor.moveToFirst()) {
+            finance = com.example.voca.model.Finance(
+                id = cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_FIN_ID)),
+                userId = cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_FIN_USER_ID)),
+                title = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_FIN_TITLE)),
+                amount = cursor.getDouble(cursor.getColumnIndexOrThrow(COLUMN_FIN_AMOUNT)),
+                type = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_FIN_TYPE)),
+                category = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_FIN_CATEGORY)),
+                date = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_FIN_DATE)),
+                imagePath = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_FIN_IMAGE)),
+                isSynced = cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_FIN_IS_SYNCED)),
+                remoteId = cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_FIN_REMOTE_ID))
+            )
+        }
+        cursor.close()
+        return finance
     }
 
     fun deleteTransaction(id: Int): Int {

@@ -8,7 +8,7 @@ object AppConfig {
     var MODE = Mode.PRODUCTION
 
     // Server URL untuk production
-    var SERVER_URL = "http://10.184.39.98/voca_api"
+    var SERVER_URL = "http://192.168.1.6/voca_api"
 
     enum class Mode {
         /**

@@ -4,10 +4,10 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_marginBottom="12dp"
-    app:cardBackgroundColor="@color/white"
+    app:cardBackgroundColor="@color/voca_card_bg"
     app:cardCornerRadius="16dp"
     app:cardElevation="0dp"
-    app:strokeColor="#E2E8F0"
+    app:strokeColor="@color/voca_border"
     app:strokeWidth="1dp">
 
     <LinearLayout
@@ -24,7 +24,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Dana Mobil Baru"
-                android:textColor="@color/voca_dark_blue"
+                android:textColor="@color/text_adaptive"
                 android:textStyle="bold" />
             <TextView
                 android:id="@+id/tvItemGoalPercent"
