@@ -152,7 +152,7 @@ class DetailTransactionActivity : AppCompatActivity() {
                 this,
                 { _, year, month, dayOfMonth ->
                     calendar.set(year, month, dayOfMonth)
-                    val dateFormat = SimpleDateFormat("dd MMM yyyy", Locale.getDefault())
+                    val dateFormat = SimpleDateFormat("dd MMM yyyy", Locale("id", "ID"))
                     transactionDate = dateFormat.format(calendar.time)
                     binding.tvDetailDate.text = transactionDate
                 },
@@ -189,8 +189,8 @@ class DetailTransactionActivity : AppCompatActivity() {
             binding.ivDetailIcon.setImageResource(R.drawable.ic_income_default)
         } else {
             binding.tvDetailType.text = "Pengeluaran"
-            binding.tvDetailType.setTextColor(android.graphics.Color.parseColor("#3B82F6"))
-            binding.tvDetailType.backgroundTintList = android.content.res.ColorStateList.valueOf(android.graphics.Color.parseColor("#E2F2FF"))
+            binding.tvDetailType.setTextColor(android.graphics.Color.parseColor("#F56565"))
+            binding.tvDetailType.backgroundTintList = android.content.res.ColorStateList.valueOf(android.graphics.Color.parseColor("#FFF5F5"))
             updateCategoryIcon(transactionCategory)
         }
     }
@@ -226,7 +226,7 @@ class DetailTransactionActivity : AppCompatActivity() {
 
             // Update calendar for DatePicker initial value
             try {
-                val dateFormat = SimpleDateFormat("dd MMM yyyy", Locale.getDefault())
+                val dateFormat = SimpleDateFormat("dd MMM yyyy", Locale("id", "ID"))
                 dateFormat.parse(transactionDate)?.let {
                     calendar.time = it
                 }

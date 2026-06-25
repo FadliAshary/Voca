@@ -395,9 +395,9 @@ class AddTransactionActivity : AppCompatActivity() {
             }
             
             // Format tanggal untuk SQLite (Lokal)
-            val dateLocal = SimpleDateFormat("dd MMM yyyy", Locale.getDefault()).format(calendar.time)
+            val dateLocal = SimpleDateFormat("dd MMM yyyy", Locale("id", "ID")).format(calendar.time)
             // Format tanggal untuk MySQL (Server YYYY-MM-DD)
-            val dateServer = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(calendar.time)
+            val dateServer = SimpleDateFormat("yyyy-MM-dd", Locale("id", "ID")).format(calendar.time)
             
             val userId = session.getUserId()
 

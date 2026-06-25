@@ -176,7 +176,7 @@ class BudgetFragment : Fragment() {
             if (type != "expense") return@filter false
             
             try {
-                val date = SimpleDateFormat("dd MMM yyyy", Locale.getDefault()).parse(dateStr) ?: return@filter false
+                val date = SimpleDateFormat("dd MMM yyyy", Locale("id", "ID")).parse(dateStr) ?: return@filter false
                 val cal = Calendar.getInstance().apply { time = date }
                 if (budgetType == "Mingguan") {
                     now.get(Calendar.WEEK_OF_YEAR) == cal.get(Calendar.WEEK_OF_YEAR) &&
@@ -206,7 +206,7 @@ class BudgetFragment : Fragment() {
         val filteredTransactions = transactions.filter { t ->
             val dateStr = t["date"] as String
             try {
-                val date = SimpleDateFormat("dd MMM yyyy", Locale.getDefault()).parse(dateStr) ?: return@filter false
+                val date = SimpleDateFormat("dd MMM yyyy", Locale("id", "ID")).parse(dateStr) ?: return@filter false
                 val cal = Calendar.getInstance().apply { time = date }
                 if (budgetType == "Mingguan") {
                     now.get(Calendar.WEEK_OF_YEAR) == cal.get(Calendar.WEEK_OF_YEAR) &&
